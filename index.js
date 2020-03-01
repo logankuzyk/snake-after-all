@@ -39,12 +39,12 @@ app.post('/start', (request, response) => {
 })
 
 app.post('/move', (request, response) => {
-  const data = {}
-  if (willCollide) {
-    data = {move: 'left'}
-  } else {
-    data = {move: 'right'}
-  }
+  const data = {move='left'}
+  // if (willCollide) {
+  //   data = {move: 'left'}
+  // } else {
+  //   data = {move: 'right'}
+  // }
   return response.json(data)
 })
 
