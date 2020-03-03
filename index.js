@@ -21,8 +21,8 @@ function willCollide () {
   if (
     request.pos['x'] < 0
     || request.pos['x'] < 0
-    || request.post['x'] > board['width'] - 1
-    || request.post['y'] > board['height'] - 1) {
+    || request.pos['x'] > board['width'] - 1
+    || request.pos['y'] > board['height'] - 1) {
       return true
     } else {
       return false
