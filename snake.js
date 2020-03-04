@@ -97,7 +97,7 @@ function decide () {
     return 'up'
 }
 
-function move (apiRequest) {
+module.exports = function (apiRequest) {
     request = apiRequest
     let move = decide()
     return move

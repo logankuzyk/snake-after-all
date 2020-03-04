@@ -40,7 +40,7 @@ app.post('/move', (request, response) => {
 
   // Response data
   const data = {
-    move: snake.move(request), // one of: ['up','down','left','right']
+    move: snake(request), // one of: ['up','down','left','right']
   }
 
   return response.json(data)
