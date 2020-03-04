@@ -1,4 +1,4 @@
-let request = {}
+var request = {}
 
 function possibleMoves (x, y) {
     possibilities = ['up', 'right', 'down', 'left']
