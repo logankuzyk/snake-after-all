@@ -66,9 +66,6 @@ function decide () {
     let options = possibleMoves()
     let want = []
 
-    process.stdout.write(options)
-    process.stdout.write(want)
-
     for (let nug of request.board.food) {
         if (request.you.body[0].x < nug.x) {
             if (want.indexOf('right') < 0) {
@@ -105,6 +102,5 @@ function decide () {
 module.exports = function (apiRequest) {
     request = apiRequest
     let move = decide()
-    process.stdout.write(move)
     return move
 }
