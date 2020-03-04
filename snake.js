@@ -1,30 +1,32 @@
 var request = {}
 
-function possibleMoves (x, y) {
+function possibleMoves () {
     possibilities = ['up', 'right', 'down', 'left']
+    let x = request.you.body[0].x
+    let y = request.you.body[0].y
 
     // Checks surround blocks to see if occupied by snake bodies.
-    for (let snake in request.snakes) {
-        for (let i = 0; i < request.snake.body.length; i++) {
-            if (snake.body.x == x + 1) {
+    for (let snake of request.board.snakes) {
+        for (let i = 0; i < snake.body.length; i++) {
+            if (snake.body[i].x == x + 1) {
                 let rem = possibilities.indexOf('right')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
-            if (snake.body.x == x - 1) {
+            if (snake.body[i].x == x - 1) {
                 let rem = possibilities.indexOf('left')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
-            if (snake.body.y == y + 1) {
+            if (snake.body[i].y == y + 1) {
                 let rem = possibilities.indexOf('up')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
-            if (snake.body.y == y - 1) {
+            if (snake.body[i].y == y - 1) {
                 let rem = possibilities.indexOf('down')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
@@ -66,12 +68,10 @@ function decide () {
 
     for (let nug of request.board.food) {
         if (request.you.body[0].x < nug.x) {
-            console.log('want to move right')
             if (want.indexOf('right') < 0) {
                 want.push('right')
             }
         } else if (request.you.body[0].x > nug.x) {
-            console.log('want to move left')
             if (want.indexOf('left') < 0) {
                 want.push('left')
             }
