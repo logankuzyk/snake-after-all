@@ -27,7 +27,7 @@ app.post('/start', (request, response) => {
 
   // Response data
   const data = {
-    color: '#FFFFFF',
+    color: '#F1F1F1',
   }
 
   return response.json(data)
@@ -39,7 +39,7 @@ app.post('/move', (request, response) => {
 
   // Response data
   const data = {
-    move: 'up', // one of: ['up','down','left','right']
+    move: 'left', // one of: ['up','down','left','right']
   }
 
   return response.json(data)
