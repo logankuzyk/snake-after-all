@@ -107,6 +107,7 @@ function moveTowards ({x, y}) {
 
 module.exports = function (apiRequest) {
     request = apiRequest
-    let move = moveTowards(request.board.food[0])
+    // let move = moveTowards(request.board.food[0])
+    let move = snakeOptions(request.you)[0]
     return move
 }
