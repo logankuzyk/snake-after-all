@@ -2,6 +2,7 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const logger = require('morgan')
 const app = express()
+const snake = require('./snake')
 const {
   fallbackHandler,
   notFoundHandler,
@@ -39,7 +40,7 @@ app.post('/move', (request, response) => {
 
   // Response data
   const data = {
-    move: 'left', // one of: ['up','down','left','right']
+    move: snake.move(request), // one of: ['up','down','left','right']
   }
 
   return response.json(data)
