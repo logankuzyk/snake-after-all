@@ -5,28 +5,28 @@ function snakeOptions (snake) {
     let possibilities = ['up', 'right', 'left', 'down']
     let x = snake.body[0].x
     let y = snake.body[0].y
-    
+
     for (let other of request.board.snakes) {
         for (let i = 0; i < other.body.length; i++) {
-            if (other.body[i].x == x + 1) {
+            if (other.body[i].x == x + 1 && other.body[i].y == y) {
                 let rem = possibilities.indexOf('right')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
-            if (other.body[i].x == x - 1) {
+            if (other.body[i].x == x - 1 && other.body[i].y == y) {
                 let rem = possibilities.indexOf('left')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
-            if (other.body[i].y == y + 1) {
+            if (other.body[i].y == y + 1 && other.body[i].x == x) {
                 let rem = possibilities.indexOf('up')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
-            if (other.body[i].y == y - 1) {
+            if (other.body[i].y == y - 1 && other.body[i].x == x) {
                 let rem = possibilities.indexOf('down')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
@@ -58,7 +58,7 @@ function snakeOptions (snake) {
             possibilities.splice(rem, 1)
         }
     }
-    
+
     return possibilities
 }
 
