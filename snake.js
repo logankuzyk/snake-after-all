@@ -84,7 +84,7 @@ function moveTowards ({x, y}) {
         }
     }
 
-    if (request.you.body[0].y < nug.y) {
+    if (request.you.body[0].y < y) {
         if (want.indexOf('up') < 0) {
             want.push('up')
         }
