@@ -96,6 +96,7 @@ function decide () {
 
 function move (apiRequest) {
     request = apiRequest
-    
-    return decide()
+    let move = decide()
+    console.log("Moving " + move)
+    return move
 }
