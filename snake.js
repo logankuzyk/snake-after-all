@@ -56,7 +56,7 @@ function possibleMoves (x, y) {
             possibilities.splice(rem, 1)
         }
     }
-
+    
     return possibilities
 }
 
@@ -64,28 +64,31 @@ function decide () {
     let options = possibleMoves()
     let want = []
 
-    for (let nug in request.board.food) {
+    for (let nug of request.board.food) {
         if (request.you.body[0].x < nug.x) {
-            if (want.indexOf('right') >= 0) {
+            console.log('want to move right')
+            if (want.indexOf('right') < 0) {
                 want.push('right')
             }
         } else if (request.you.body[0].x > nug.x) {
-            if (want.indexOf('left') >= 0) {
+            console.log('want to move left')
+            if (want.indexOf('left') < 0) {
                 want.push('left')
             }
         }
 
         if (request.you.body[0].y < nug.y) {
-            if (want.indexOf('up') >= 0) {
+            if (want.indexOf('up') < 0) {
                 want.push('up')
             }
         } else if (request.you.body[0].y > nug.y){
-            if (want.indexOf('down') >= 0) {
+            if (want.indexOf('down') < 0) {
                 want.push('down')
             }
         }
     }
-    for (let dir in options) {
+
+    for (let dir of options) {
         if (want.indexOf(dir) >= 0) {
             return dir
         }
@@ -97,6 +100,5 @@ function decide () {
 function move (apiRequest) {
     request = apiRequest
     let move = decide()
-    console.log("Moving " + move)
     return move
 }
