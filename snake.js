@@ -88,13 +88,15 @@ function decide () {
         }
     }
 
+    let move
+
     for (let dir of options) {
         if (want.indexOf(dir) >= 0) {
-            return dir
+            move = dir
         }
     }
 
-    return 'up'
+    return move
 }
 
 module.exports = function (apiRequest) {
