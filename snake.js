@@ -100,8 +100,7 @@ function decide () {
 }
 
 module.exports = function (apiRequest) {
-    // request = apiRequest
-    // let move = decide()
-    // return move
-    return 'right'
+    request = apiRequest
+    let move = decide()
+    return move
 }
