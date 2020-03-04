@@ -88,7 +88,7 @@ function decide () {
         }
     }
 
-    let move
+    let move = 'left'
 
     for (let dir of options) {
         if (want.indexOf(dir) >= 0) {
