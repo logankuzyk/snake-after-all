@@ -79,13 +79,13 @@ function snakeDirection (snake) {
         y: head.y - neck.y
     }
 
-    if (vector.x > 0) {
+    if (vector.x < 0) {
         return 'right'
-    } else if (vector.x < 0) {
+    } else if (vector.x > 0) {
         return 'left'
-    } else if (vector.y > 0) {
-        return 'up'
     } else if (vector.y < 0) {
+        return 'up'
+    } else if (vector.y > 0) {
         return 'down'
     } else {
         return 'right'
