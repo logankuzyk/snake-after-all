@@ -87,8 +87,6 @@ function snakeDirection (snake) {
         return 'up'
     } else if (vector.y > 0) {
         return 'down'
-    } else {
-        return 'right'
     }
 }
 
@@ -123,14 +121,20 @@ function moveTowards ({x, y}) {
             want.push('down')
         }
     }
-
+    console.log(want)
     // Remove moves that would collide.
-    for (let dir of want) {
-        let rem = possible.indexOf(dir)
+    for (let i = 0; i < want.length; i++) {
+        let rem = possible.indexOf(want[i])
         if (rem < 0) {
-            rem = want.indexOf(dir)
-            want.splice(rem, 1)
+            want.splice(i, 1)
+            i--
         }
+    }
+    console.log(want)
+    console.log(possible)
+
+    if (want.length == 0) {
+        return possible
     }
 
     return want
