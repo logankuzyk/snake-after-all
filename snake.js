@@ -21,13 +21,13 @@ function snakeOptions (snake) {
                 }
             }
             if (other.body[i].y == y + 1 && other.body[i].x == x) {
-                let rem = possibilities.indexOf('up')
+                let rem = possibilities.indexOf('down')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
             }
             if (other.body[i].y == y - 1 && other.body[i].x == x) {
-                let rem = possibilities.indexOf('down')
+                let rem = possibilities.indexOf('up')
                 if (rem >= 0) {
                     possibilities.splice(rem, 1)
                 }
