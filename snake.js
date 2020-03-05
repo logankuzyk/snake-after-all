@@ -35,7 +35,7 @@ function snakeOptions (snake) {
         }
     }
 
-    if (x == 1) {
+    if (x == 0) {
         let rem = possibilities.indexOf('left')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
@@ -47,7 +47,7 @@ function snakeOptions (snake) {
         }
     }
 
-    if (y == 1) {
+    if (y == 0) {
         let rem = possibilities.indexOf('down')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
