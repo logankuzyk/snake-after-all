@@ -40,7 +40,7 @@ function snakeOptions (snake) {
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
-    } else if (x - 1 == request.board.width - 1) {
+    } else if (x == request.board.width - 1) {
         let rem = possibilities.indexOf('right')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
@@ -52,7 +52,7 @@ function snakeOptions (snake) {
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
-    } else if (y - 1 == request.board.height) {
+    } else if (y == request.board.height - 1) {
         let rem = possibilities.indexOf('up')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
@@ -138,10 +138,11 @@ function moveTowards ({x, y}) {
 module.exports = function (apiRequest) {
     request = apiRequest
     // let move = moveTowards(request.board.food[0])
-    let move = snakeOptions(request.you)
-    if (move.indexOf(snakeDirection(request.you)) >= 0) {
-        return snakeDirection(request.you)
-    } else {
-        return move[0]
-    }
+    let move = snakeOptions(request.you)[0]
+    return move
+    // if (move.indexOf(snakeDirection(request.you)) >= 0) {
+    //     return snakeDirection(request.you)
+    // } else {
+    //     return move[0]
+    // }
 }
