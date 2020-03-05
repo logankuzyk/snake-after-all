@@ -141,6 +141,6 @@ module.exports = function (apiRequest) {
     if (move.indexOf(snakeDirection(request.you)) >= 0) {
         return snakeDirection(request.you)
     } else {
-        return move[0]
+        return move
     }
 }
