@@ -48,12 +48,12 @@ function snakeOptions (snake) {
     }
 
     if (y == 0) {
-        let rem = possibilities.indexOf('down')
+        let rem = possibilities.indexOf('up')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
     } else if (y == request.board.height - 1) {
-        let rem = possibilities.indexOf('up')
+        let rem = possibilities.indexOf('down')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
