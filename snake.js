@@ -128,6 +128,7 @@ function moveTowards ({x, y}) {
     for (let dir of want) {
         let rem = possible.indexOf(dir)
         if (rem < 0) {
+            rem = want.indexOf(dir)
             want.splice(rem, 1)
         }
     }
