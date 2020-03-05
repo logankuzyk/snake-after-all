@@ -40,7 +40,7 @@ function snakeOptions (snake) {
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
-    } else if (x == request.board.width - 1) {
+    } else if (x - 1 == request.board.width - 1) {
         let rem = possibilities.indexOf('right')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
@@ -52,7 +52,7 @@ function snakeOptions (snake) {
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
-    } else if (y == request.board.height - 1) {
+    } else if (y - 1 == request.board.height) {
         let rem = possibilities.indexOf('up')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
@@ -60,6 +60,36 @@ function snakeOptions (snake) {
     }
 
     return possibilities
+}
+
+function snakeDirection (snake) {
+    if (snake.body.length == 1) {
+        return 'right'
+    }
+    let head = {
+        x: snake.body[0].x,
+        y: snake.body[0].y
+    }
+    let neck = {
+        x: snake.body[1].x,
+        y: snake.body[1].y
+    }
+    let vector = {
+        x: head.x - neck.x,
+        y: head.y - neck.y
+    }
+
+    if (vector.x > 0) {
+        return 'right'
+    } else if (vector.x < 0) {
+        return 'left'
+    } else if (vector.y > 0) {
+        return 'up'
+    } else if (vector.y < 0) {
+        return 'down'
+    } else {
+        return 'right'
+    }
 }
 
 // function heatMap () {
@@ -108,6 +138,10 @@ function moveTowards ({x, y}) {
 module.exports = function (apiRequest) {
     request = apiRequest
     // let move = moveTowards(request.board.food[0])
-    let move = snakeOptions(request.you)[0]
-    return move
+    let move = snakeOptions(request.you)
+    if (move.indexOf(snakeDirection(request.you)) >= 0) {
+        return snakeDirection(request.you)
+    } else {
+        return move[0]
+    }
 }
