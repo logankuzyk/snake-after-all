@@ -35,6 +35,30 @@ function snakeOptions (snake) {
         }
     }
 
+    let dir = snakeDirection(snake)
+
+    if (dir == 'up') {
+        let rem = possibilities.indexOf('up')
+        if (rem >= 0) {
+            possibilities.splice(rem, 1)
+        }
+    } else if (dir == 'down') {
+        let rem = possibilities.indexOf('down')
+        if (rem >= 0) {
+            possibilities.splice(rem, 1)
+        }
+    } else if (dir == 'left') {
+        let rem = possibilities.indexOf('left')
+        if (rem >= 0) {
+            possibilities.splice(rem, 1)
+        }
+    } else if (dir == 'right') {
+        let rem = possibilities.indexOf('right')
+        if (rem >= 0) {
+            possibilities.splice(rem, 1)
+        }
+    }
+
     if (x == 0) {
         let rem = possibilities.indexOf('left')
         if (rem >= 0) {
