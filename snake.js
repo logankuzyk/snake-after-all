@@ -126,7 +126,7 @@ function moveTowards ({x, y}) {
 
     // Remove moves that would collide.
     for (let dir of want) {
-        if (possible.indexOf(dir) < 0) {
+        if (possible.indexOf(dir) > 0) {
             want.splice(dir, 1)
         }
     }
