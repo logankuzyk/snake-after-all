@@ -124,15 +124,14 @@ function moveTowards ({x, y}) {
         }
     }
 
-    let move = 'left'
-
-    for (let dir of possible) {
-        if (want.indexOf(dir) >= 0) {
-            move = dir
+    // Remove moves that would collide.
+    for (let dir of want) {
+        if (possibilities.indexOf(dir) < 0) {
+            want.splice(dir, 1)
         }
     }
 
-    return move
+    return want
 }
 
 module.exports = function (apiRequest) {
@@ -141,6 +140,6 @@ module.exports = function (apiRequest) {
     if (move.indexOf(snakeDirection(request.you)) >= 0) {
         return snakeDirection(request.you)
     } else {
-        return move
+        return move[0]
     }
 }
