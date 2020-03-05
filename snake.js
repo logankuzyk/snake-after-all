@@ -137,12 +137,10 @@ function moveTowards ({x, y}) {
 
 module.exports = function (apiRequest) {
     request = apiRequest
-    // let move = moveTowards(request.board.food[0])
-    let move = snakeOptions(request.you)[0]
-    return move
-    // if (move.indexOf(snakeDirection(request.you)) >= 0) {
-    //     return snakeDirection(request.you)
-    // } else {
-    //     return move[0]
-    // }
+    let move = moveTowards(request.board.food[0])
+    if (move.indexOf(snakeDirection(request.you)) >= 0) {
+        return snakeDirection(request.you)
+    } else {
+        return move[0]
+    }
 }
