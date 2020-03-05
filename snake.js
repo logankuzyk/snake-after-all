@@ -38,22 +38,22 @@ function snakeOptions (snake) {
     let dir = snakeDirection(snake)
 
     if (dir == 'up') {
-        let rem = possibilities.indexOf('up')
-        if (rem >= 0) {
-            possibilities.splice(rem, 1)
-        }
-    } else if (dir == 'down') {
         let rem = possibilities.indexOf('down')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
+    } else if (dir == 'down') {
+        let rem = possibilities.indexOf('up')
+        if (rem >= 0) {
+            possibilities.splice(rem, 1)
+        }
     } else if (dir == 'left') {
-        let rem = possibilities.indexOf('left')
+        let rem = possibilities.indexOf('right')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
     } else if (dir == 'right') {
-        let rem = possibilities.indexOf('right')
+        let rem = possibilities.indexOf('left')
         if (rem >= 0) {
             possibilities.splice(rem, 1)
         }
@@ -107,9 +107,9 @@ function snakeDirection (snake) {
         return 'right'
     } else if (vector.x < 0) {
         return 'left'
-    } else if (vector.y > 0) {
-        return 'up'
     } else if (vector.y < 0) {
+        return 'up'
+    } else if (vector.y > 0) {
         return 'down'
     } else {
         return 'right'
