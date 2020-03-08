@@ -346,14 +346,14 @@ function brain () {
     let thinking = new Thinking(request.you)
     let feeling = new Feeling()
 
-    // for (let move of feeling.moveTowards(closestFood())) {
-    //     let i = feel[move]
-    //     if (i >= 0) {
-    //         feel[move]++
-    //     } else {
-    //         feel[move] = 1
-    //     }
-    // }
+    for (let move of feeling.moveTowards(closestFood())) {
+        let i = feel[move]
+        if (i >= 0) {
+            feel[move]++
+        } else {
+            feel[move] = 1
+        }
+    }
 
     // for (let move of feeling.snakeDirection(request.you)) {
     //     feel[move]++
