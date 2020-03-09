@@ -87,7 +87,7 @@ class Thinking {
         let snake = simRequest.you
         let head = snake.body[0]
         iterations++
-        if (iterations == maxIterations + 1 || this.snakeOptions(snake, simRequest).length == 0) {
+        if (iterations == maxIterations + 1) {
             return 0
         }
         for (let other of simRequest.board.snakes) {
@@ -112,10 +112,12 @@ class Thinking {
             snake.body.unshift({x: head.x, y: head.y + 1})
         }
 
-        // Check if snake moved off the board.
+        // Check if snake moved off the board or ran out of options.
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
             return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= simRequest.board.height) {
+            return 0
+        } else if (this.snakeOptions(snake, simRequest).length == 0) {
             return 0
         }
 
