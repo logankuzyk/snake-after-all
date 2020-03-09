@@ -9,44 +9,33 @@ class Thinking {
     }
 
     // Returns possible moves for given snake.
-    snakeOptions = function (snake, nextRequest) {
+    snakeOptions = function (snake, apiRequest) {
+        console.log('SNAKE OPTIONS CALLED')
         let possibilities = ['up', 'right', 'left', 'down']
         let x = snake.body[0].x
         let y = snake.body[0].y
 
-        for (let other of nextRequest.board.snakes) {
+        for (let other of apiRequest.board.snakes) {
             for (let i = 0; i < other.body.length; i++) {
                 if (other.body[i].x == x + 1 && other.body[i].y == y) {
-                    // if (nextRequest.board.width > (x + 1) >= 0) {
-                    //     nextRequest.board.possibilities[x + 1][y] = 1
-                    // }
                     let rem = possibilities.indexOf('right')
                     if (rem >= 0) {
                         possibilities.splice(rem, 1)
                     }
                 }
                 if (other.body[i].x == x - 1 && other.body[i].y == y) {
-                    // if (nextRequest.board.width > (x - 1) >= 0) {
-                    //     nextRequest.board.possibilities[x - 1][y] = 1
-                    // }
                     let rem = possibilities.indexOf('left')
                     if (rem >= 0) {
                         possibilities.splice(rem, 1)
                     }
                 }
                 if (other.body[i].y == y + 1 && other.body[i].x == x) {
-                    // if (nextRequest.board.width > (y + 1) >= 0) {
-                    //     nextRequest.board.possibilities[x][y + 1] = 1
-                    // }
                     let rem = possibilities.indexOf('down')
                     if (rem >= 0) {
                         possibilities.splice(rem, 1)
                     }
                 }
                 if (other.body[i].y == y - 1 && other.body[i].x == x) {
-                    // if (nextRequest.board.width > (y - 1) >= 0) {
-                    //     nextRequest.board.possibilities[x][y - 1] = 1
-                    // }
                     let rem = possibilities.indexOf('up')
                     if (rem >= 0) {
                         possibilities.splice(rem, 1)
@@ -60,7 +49,7 @@ class Thinking {
             if (rem >= 0) {
                 possibilities.splice(rem, 1)
             }
-        } else if (x == nextRequest.board.width - 1) {
+        } else if (x == apiRequest.board.width - 1) {
             let rem = possibilities.indexOf('right')
             if (rem >= 0) {
                 possibilities.splice(rem, 1)
@@ -72,13 +61,15 @@ class Thinking {
             if (rem >= 0) {
                 possibilities.splice(rem, 1)
             }
-        } else if (y == nextRequest.board.height - 1) {
+        } else if (y == apiRequest.board.height - 1) {
             let rem = possibilities.indexOf('down')
             if (rem >= 0) {
                 possibilities.splice(rem, 1)
             }
         }
-
+        // console.log('body and possibilities:')
+        // console.log(snake.body)
+        // console.log(possibilities)
         return possibilities
     }
 
@@ -88,26 +79,38 @@ class Thinking {
         let head = snake.body[0]
         iterations++
         if (iterations == maxIterations + 1) {
-            return 0
+            return ' ran out of tries'
         }
         for (let other of simRequest.board.snakes) {
             if (other.body.length == 0) {
                 break
+            } else if (other.body[0].x == head.x && other.body[0].y == head.y) {
+                // "Other" is actually my snake.
+                if (move == 'right') {
+                    other.body.unshift({x: head.x + 1, y: head.y})
+                } else if (move == 'left') {
+                    other.body.unshift({x: head.x - 1, y: head.y})
+                } else if (move == 'up') {
+                    other.body.unshift({x: head.x, y: head.y - 1})
+                } else if (move == 'down') {
+                    other.body.unshift({x: head.x, y: head.y + 1})
+                }
             }
+            // console.log(other.body.length)
             let x = other.body[other.body.length - 1].x
             let y = other.body[other.body.length - 1].y
-            simRequest.board.possibilities[x][y]--
+            // simRequest.board.possibilities[x][y]--
             other.body.pop()
         }
         
         // Delete tail of own snake.
         let x = snake.body[snake.body.length - 1].x
         let y = snake.body[snake.body.length - 1].y
-        simRequest.board.possibilities[x][y]--
+        // simRequest.board.possibilities[x][y]--
         snake.body.pop()
 
         // Moves head to given move.
-        console.log(snake.body[0])
+        // console.log(snake.body[0])
         if (move == 'right') {
             snake.body.unshift({x: head.x + 1, y: head.y})
         } else if (move == 'left') {
@@ -117,47 +120,50 @@ class Thinking {
         } else if (move == 'down') {
             snake.body.unshift({x: head.x, y: head.y + 1})
         }
-        console.log(snake.body[0])
+        // console.log(snake.body[0])
         // Check if snake moved off the board or ran out of options.
+        console.log(simRequest.board.snakes[0].body[0])
+        console.log(simRequest.you.body[0])
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
-            return 0
+            return "=>ran off horizontal"
         } else if (0 > snake.body[0].y || snake.body[0].y >= simRequest.board.height) {
-            return 0
+            return "=>ran off vertical"
         } else if (this.snakeOptions(snake, simRequest).length == 0) {
-            return 0
+            return "=>no more options"
         }
         // console.log(this.probabilityFlow(simRequest))
         // console.log(head)
-        console.log(this.snakeOptions(simRequest.you, simRequest))
-        console.log(this.probabilityFlow(simRequest))
+        // console.log(this.snakeOptions(simRequest.you, simRequest))
+        // console.log(this.probabilityFlow(simRequest))
         for (let move of this.probabilityFlow(simRequest)) {
             let newRequest = JSON.stringify(simRequest)
-            console.log('split: ' + move)
-            // console.log(snake.body[0].x + ',' + snake.body[0].y + ' moving ' + move)
+            console.log(snake.body[0].x + ',' + snake.body[0].y + ' moving ' + move)
             if (move == 'right') {
-                return 1 + this.simulateHelper(newRequest, move, iterations)
+                return '=>right' + this.simulateHelper(newRequest, move, iterations)
             } else if (move == 'left') {
-                return 1 + this.simulateHelper(newRequest, move, iterations)
+                return '=>left' + this.simulateHelper(newRequest, move, iterations)
             } else if (move == 'up') {
-                return 1 + this.simulateHelper(newRequest, move, iterations)
+                return '=>up' + this.simulateHelper(newRequest, move, iterations)
             } else if (move == 'down') {
-                return 1 + this.simulateHelper(newRequest, move, iterations)
+                return '=>down' + this.simulateHelper(newRequest, move, iterations)
             }
         }
+
+        return '=>no more options'
     }
 
-    // Runs simulations and returns best one, entry point for using simulations.
-    simulate = function () {
+    // Makes decision between simulated directions.
+    simulate = function (apiRequest) {
+        let nextRequest = JSON.parse(apiRequest)
         let result = {right: 0, left: 0, up: 0, down: 0}
         let final = []
-        for (let move of this.probabilityFlow(request)) {
+        for (let move of this.probabilityFlow(nextRequest)) {
             // console.log('simulating ' + move)
-            // result[move] = this.simulateHelper(requestText, move, 0)
+            result[move] = this.simulateHelper(apiRequest, move, 0)
             // console.log(result[move])
         }
-        result['up'] = this.simulateHelper(requestText, 'up', 0)
-        console.log(result.up)
 
+        console.log(result)
         let max = Math.max(result.right, result.left, result.up, result.down)
         if (result['right'] == max) {
             final.push('right')
@@ -168,15 +174,27 @@ class Thinking {
         } if (result['down'] == max) {
             final.push('down')
         }
-        console.log(result)
-        // console.log(final)
+        console.log(final)
         return final
     }
+    
+    // Updates occupied tiles of board to have 100% probability.
+    updateProbabilities = function (apiRequest) {
+        for (let snakes of apiRequest.board.snakes) {
+            for (let tile of snakes.body) {
+                let x = tile.x
+                let y = tile.y
 
+                apiRequest.board.possibilities[x][y]++
+            }
+        }
+    }
     // Returns list of moves that are least likely to collide.
     // TODO: make HTTP request and snake parameters.
     probabilityFlow = function (apiRequest) {
+        console.log('PROBFLOW CALLED')
         let snake = apiRequest.you
+        this.updateProbabilities(apiRequest)
         for (let other of apiRequest.board.snakes) {
             // Ignoring probablity of own snake moving to a tile.
             if (other.body.length == 0) {
@@ -204,6 +222,7 @@ class Thinking {
         let left = 1
         let up = 1
         let down = 1
+        console.log('at line probflow 222')
         for (let option of this.snakeOptions(snake, apiRequest)) {
             if (option == 'right') {
                 right = apiRequest.board.possibilities[snake.body[0].x + 1][snake.body[0].y]
@@ -216,10 +235,10 @@ class Thinking {
             }
         }
 
-        // console.log('right ' + right)
-        // console.log('left ' + left)
-        // console.log('up ' + up)
-        // console.log('down ' + down)
+        console.log('right ' + right)
+        console.log('left ' + left)
+        console.log('up ' + up)
+        console.log('down ' + down)
         
 
         let min = ''
@@ -236,8 +255,12 @@ class Thinking {
             options.push('down')
         }        
         // TODO: make sure probabilities are only being edited once per turn simulation.        
-        
-        // console.log('probflow chooses ' + options)
+        console.log('probflow about to return')
+        // console.log(snake.body)
+        console.log('probflow chooses ' + options)
+        if (min >= 1) {
+            return []
+        }
         return options
     }
 }
@@ -384,7 +407,7 @@ function brain () {
     //     }
     // }
 
-    for (let move of thinking.simulate()) {
+    for (let move of thinking.simulate(requestText)) {
         let i = think[move]
         if (i >= 0) {
             think[move]++
@@ -428,7 +451,7 @@ function brain () {
 module.exports = function (apiRequest) {
     request = apiRequest
     request.board.possibilities = []
-    console.log(request.you.body[0])
+    // console.log(request.you.body[0])
     console.time('now')
     for (let i = 0; i < request.board.width; i++) {
         request.board.possibilities.push([])
