@@ -118,28 +118,19 @@ class Thinking {
 
         // Check if snake moved off the board or ran out of options.
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
-            return "=>ran off horizontal"
+            return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= simRequest.board.height) {
-            return "=>ran off vertical"
+            return 0
         } else if (this.snakeOptions(snake, simRequest).length == 0) {
-            return "=>no more options"
+            return 0
         }
 
         for (let move of this.probabilityFlow(simRequest)) {
             let newRequest = JSON.stringify(simRequest)
-            // console.log(snake.body[0].x + ',' + snake.body[0].y + ' moving ' + move)
-            if (move == 'right') {
-                return '=>right' + this.simulateHelper(newRequest, move, iterations)
-            } else if (move == 'left') {
-                return '=>left' + this.simulateHelper(newRequest, move, iterations)
-            } else if (move == 'up') {
-                return '=>up' + this.simulateHelper(newRequest, move, iterations)
-            } else if (move == 'down') {
-                return '=>down' + this.simulateHelper(newRequest, move, iterations)
-            }
+            return 1 + this.simulateHelper(newRequest, move, iterations)
         }
 
-        return '=>no more options'
+        return 0
     }
 
     // Makes decision between simulated directions.
@@ -164,7 +155,6 @@ class Thinking {
             final.push('down')
         }
         console.log(result)
-        console.log(final)
         return final
     }
     
