@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 40
+let maxIterations = 10
 
 // Thinking methods are for life-saving moves and cannot be ignored. snakeOptions prevents immediate death, the others prevent death within the next few turns.
 class Thinking {
@@ -91,7 +91,7 @@ class Thinking {
             return 0
         }
         for (let other of simRequest.board.snakes) {
-            if (other.body.length == 1) {
+            if (other.body.length == 0) {
                 break
             }
             let x = other.body[other.body.length - 1].x
@@ -100,8 +100,14 @@ class Thinking {
             other.body.pop()
         }
         
+        // Delete tail of own snake.
+        let x = snake.body[snake.body.length - 1].x
+        let y = snake.body[snake.body.length - 1].y
+        simRequest.board.possibilities[x][y]--
+        snake.body.pop()
+
         // Moves head to given move.
-        snake = simRequest.you
+        console.log(snake.body[0])
         if (move == 'right') {
             snake.body.unshift({x: head.x + 1, y: head.y})
         } else if (move == 'left') {
@@ -111,7 +117,7 @@ class Thinking {
         } else if (move == 'down') {
             snake.body.unshift({x: head.x, y: head.y + 1})
         }
-
+        console.log(snake.body[0])
         // Check if snake moved off the board or ran out of options.
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
             return 0
@@ -120,10 +126,13 @@ class Thinking {
         } else if (this.snakeOptions(snake, simRequest).length == 0) {
             return 0
         }
-
+        // console.log(this.probabilityFlow(simRequest))
+        // console.log(head)
+        console.log(this.snakeOptions(simRequest.you, simRequest))
+        console.log(this.probabilityFlow(simRequest))
         for (let move of this.probabilityFlow(simRequest)) {
-            snake = simRequest.you
             let newRequest = JSON.stringify(simRequest)
+            console.log('split: ' + move)
             // console.log(snake.body[0].x + ',' + snake.body[0].y + ' moving ' + move)
             if (move == 'right') {
                 return 1 + this.simulateHelper(newRequest, move, iterations)
@@ -143,9 +152,12 @@ class Thinking {
         let final = []
         for (let move of this.probabilityFlow(request)) {
             // console.log('simulating ' + move)
-            result[move] = this.simulateHelper(requestText, move, 0)
+            // result[move] = this.simulateHelper(requestText, move, 0)
             // console.log(result[move])
         }
+        result['up'] = this.simulateHelper(requestText, 'up', 0)
+        console.log(result.up)
+
         let max = Math.max(result.right, result.left, result.up, result.down)
         if (result['right'] == max) {
             final.push('right')
@@ -165,9 +177,11 @@ class Thinking {
     // TODO: make HTTP request and snake parameters.
     probabilityFlow = function (apiRequest) {
         let snake = apiRequest.you
-
         for (let other of apiRequest.board.snakes) {
             // Ignoring probablity of own snake moving to a tile.
+            if (other.body.length == 0) {
+                continue
+            }
             if (other.body[0].x == snake.body[0].x && other.body[0].y == snake.body[0].y) {
                 continue
             }
@@ -424,7 +438,7 @@ module.exports = function (apiRequest) {
     }
     requestText = JSON.stringify(request)
     let message = brain()
-    console.log(request.you.body[0])
+    // console.log(request.you.body[0])
     console.log(message)
     console.timeEnd('now')
     return message
