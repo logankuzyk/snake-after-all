@@ -132,7 +132,7 @@ class Thinking {
             // console.log(result[move])
         }
         let min = Math.min(result.right, result.left, result.up, result.down)
-        return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] + min
+        return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
     }
 
     // Makes decision between simulated directions.
