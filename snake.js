@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 5
+let maxIterations = 8
 
 // Thinking methods are for life-saving moves and cannot be ignored. snakeOptions prevents immediate death, the others prevent death within the next few turns.
 class Thinking {
@@ -78,6 +78,7 @@ class Thinking {
         if (iterations == maxIterations + 1) {
             return 0
         }
+        this.updateProbabilities(simRequest)
         for (let other of simRequest.board.snakes) {
             if (other.body.length == 0) {
                 break
@@ -95,11 +96,11 @@ class Thinking {
             }
             let x = other.body[other.body.length - 1].x
             let y = other.body[other.body.length - 1].y
-            // simRequest.board.possibilities[x][y]--
+            simRequest.board.possibilities[x][y]--
             other.body.pop()
         }
         
-        // Delete tail of own snake.
+        // Delete tail of own snake. (at request.you)
         let x = snake.body[snake.body.length - 1].x
         let y = snake.body[snake.body.length - 1].y
         // simRequest.board.possibilities[x][y]--
@@ -123,12 +124,15 @@ class Thinking {
             return 0
         }
 
+        let result = {right: 0, left: 0, up: 0, down: 0}
+        let newRequest = JSON.stringify(simRequest)
         for (let move of this.probabilityFlow(simRequest)) {
-            let newRequest = JSON.stringify(simRequest)
-            return 1 + this.simulateHelper(newRequest, move, 0)
+            // console.log('simulating ' + move)
+            result[move] = this.simulateHelper(newRequest, move, iterations)
+            // console.log(result[move])
         }
-
-        return 0
+        let max = Math.max(result.right, result.left, result.up, result.down)
+        return 1 + max
     }
 
     // Makes decision between simulated directions.
@@ -231,7 +235,7 @@ class Thinking {
         }        
         // TODO: make sure probabilities are only being edited once per turn simulation.        
 
-        if (min >= 1) {
+        if (min >= 1/3) {
             return []
         }
         return options
