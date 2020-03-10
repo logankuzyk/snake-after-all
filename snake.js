@@ -119,9 +119,9 @@ class Thinking {
 
         // Check if snake moved off the board or ran out of options.
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
-            return 0
+            return 1
         } else if (0 > snake.body[0].y || snake.body[0].y >= simRequest.board.height) {
-            return 0
+            return 1
         }
 
         let result = {right: 0, left: 0, up: 0, down: 0}
