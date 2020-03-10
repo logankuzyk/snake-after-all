@@ -100,13 +100,7 @@ class Thinking {
             other.body.pop()
         }
         
-        // Delete tail of own snake. (at request.you)
-        let x = snake.body[snake.body.length - 1].x
-        let y = snake.body[snake.body.length - 1].y
-        // simRequest.board.possibilities[x][y]--
-        snake.body.pop()
-
-        // Moves head to given move.
+        // Updates snake body at request.you
         if (move == 'right') {
             snake.body.unshift({x: head.x + 1, y: head.y})
         } else if (move == 'left') {
@@ -116,6 +110,7 @@ class Thinking {
         } else if (move == 'down') {
             snake.body.unshift({x: head.x, y: head.y + 1})
         }
+        snake.body.pop()
 
         // Check if snake moved off the board or ran out of options.
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
@@ -124,7 +119,7 @@ class Thinking {
             return 1
         }
 
-        let result = {right: 0, left: 0, up: 0, down: 0}
+        let result = {right: 1, left: 1, up: 1, down: 1}
         let newRequest = JSON.stringify(simRequest)
         for (let move of this.probabilityFlow(simRequest)) {
             // console.log('simulating ' + move)
