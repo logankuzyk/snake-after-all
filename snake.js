@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 500
+let maxIterations = 5
 
 // Thinking methods are for life-saving moves and cannot be ignored. snakeOptions prevents immediate death, the others prevent death within the next few turns.
 class Thinking {
@@ -121,13 +121,11 @@ class Thinking {
             return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= simRequest.board.height) {
             return 0
-        } else if (this.snakeOptions(snake, simRequest).length == 0) {
-            return 0
         }
 
         for (let move of this.probabilityFlow(simRequest)) {
             let newRequest = JSON.stringify(simRequest)
-            return 1 + this.simulateHelper(newRequest, move, iterations)
+            return 1 + this.simulateHelper(newRequest, move, 0)
         }
 
         return 0
