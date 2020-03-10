@@ -131,8 +131,8 @@ class Thinking {
             result[move] = this.simulateHelper(newRequest, move, iterations)
             // console.log(result[move])
         }
-        let max = Math.max(result.right, result.left, result.up, result.down)
-        return 1 + max
+        let min = Math.min(result.right, result.left, result.up, result.down)
+        return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] + min
     }
 
     // Makes decision between simulated directions.
@@ -146,14 +146,14 @@ class Thinking {
             // console.log(result[move])
         }
 
-        let max = Math.max(result.right, result.left, result.up, result.down)
-        if (result['right'] == max) {
+        let min = Math.min(result.right, result.left, result.up, result.down)
+        if (result['right'] == min) {
             final.push('right')
-        } if (result['left'] == max) {
+        } if (result['left'] == min) {
             final.push('left')
-        } if (result['up'] == max) {
+        } if (result['up'] == min) {
             final.push('up')
-        } if (result['down'] == max) {
+        } if (result['down'] == min) {
             final.push('down')
         }
         console.log(result)
