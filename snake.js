@@ -1,18 +1,34 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 5
+let maxIterations = 3
+let iterations = 0
 
 // Thinking methods are for life-saving moves and cannot be ignored. snakeOptions prevents immediate death, the others prevent death within the next few turns.
 class Thinking {
     constructor () {
     }
 
+    logProbabilities = function (apiRequest) {
+        for (let y = 0; y < apiRequest.board.width; y++) {
+            let line = ''
+            for (let x = 0; x < apiRequest.board.height; x++) {
+                if (apiRequest.board.possibilities[x][y] != 0) {
+                    line += apiRequest.board.possibilities[x][y].toFixed(2) + ' '
+                } else {
+                    line += '     '
+                }
+            }
+            console.log(line)
+        }
+        console.log('')
+    }
+
     // Returns possible moves for given snake.
-    snakeOptions = function (snake, apiRequest) {
+    snakeOptions = function (coord, apiRequest) {
         let possibilities = ['up', 'right', 'left', 'down']
-        let x = snake.body[0].x
-        let y = snake.body[0].y
+        let x = coord.x
+        let y = coord.y
 
         for (let other of apiRequest.board.snakes) {
             for (let i = 0; i < other.body.length; i++) {
@@ -70,15 +86,15 @@ class Thinking {
         return possibilities
     }
 
-    simulateHelper = function (apiRequest, move, iterations) {
+    simulateHelper = function (apiRequest, move) {
         let simRequest = JSON.parse(apiRequest)
         let snake = simRequest.you
         let head = snake.body[0]
         iterations++
-        if (iterations == maxIterations + 1) {
-            return 0
+        if (iterations > maxIterations) {
+            return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y]
         }
-        this.updateProbabilities(simRequest)
+
         for (let other of simRequest.board.snakes) {
             if (other.body.length == 0) {
                 break
@@ -96,7 +112,9 @@ class Thinking {
             }
             let x = other.body[other.body.length - 1].x
             let y = other.body[other.body.length - 1].y
-            simRequest.board.possibilities[x][y]--
+            if (simRequest.board.possibilities[x][y] != 0) {
+                simRequest.board.possibilities[x][y]--
+            }
             other.body.pop()
         }
         
@@ -111,6 +129,23 @@ class Thinking {
             snake.body.unshift({x: head.x, y: head.y + 1})
         }
         snake.body.pop()
+        
+        this.currentProbs(simRequest)
+        this.logProbabilities(simRequest)
+
+        head = simRequest.you.body[0]
+
+        for (let possibility of this.snakeOptions(simRequest.you.body[0], simRequest)) {
+            if (possibility == 'right') {
+                console.log(simRequest.board.possibilities[head.x + 1][head.y])
+            } else if (possibility == 'left') {
+                console.log(simRequest.board.possibilities[head.x - 1][head.y])
+            } else if (possibility == 'up') {
+                console.log(simRequest.board.possibilities[head.x][head.y - 1])
+            } else if (possibility == 'down') {
+                console.log(simRequest.board.possibilities[head.x][head.y + 1])
+            }
+        }
 
         // Check if snake moved off the board or ran out of options.
         if (0 > snake.body[0].x || snake.body[0].x >= simRequest.board.width) {
@@ -123,23 +158,30 @@ class Thinking {
         let newRequest = JSON.stringify(simRequest)
         for (let move of this.probabilityFlow(simRequest)) {
             // console.log('simulating ' + move)
-            result[move] = this.simulateHelper(newRequest, move, iterations)
+            result[move] = this.simulateHelper(newRequest, move)
             // console.log(result[move])
         }
+        // Logic for returning the move that sums to the least amount of probability.
         let min = Math.min(result.right, result.left, result.up, result.down)
         return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
     }
 
     // Makes decision between simulated directions.
     simulate = function (apiRequest) {
-        let nextRequest = JSON.parse(apiRequest)
         let result = {right: 0, left: 0, up: 0, down: 0}
         let final = []
-        for (let move of this.probabilityFlow(nextRequest)) {
+        let currentRequest = JSON.parse(apiRequest)
+        this.currentProbs(currentRequest)
+        this.logProbabilities(currentRequest)
+
+        for (let move of this.probabilityFlow(currentRequest)) {
             // console.log('simulating ' + move)
-            result[move] = this.simulateHelper(apiRequest, move, 0)
+            console.log(move)
+            iterations = 0
+            result[move] = this.simulateHelper(apiRequest, move)
             // console.log(result[move])
         }
+        // result['right'] = this.simulateHelper(apiRequest, 'right')
 
         let min = Math.min(result.right, result.left, result.up, result.down)
         if (result['right'] == min) {
@@ -155,33 +197,69 @@ class Thinking {
         return final
     }
     
-    // Updates occupied tiles of board to have 100% probability.
-    updateProbabilities = function (apiRequest) {
-        for (let snakes of apiRequest.board.snakes) {
-            for (let tile of snakes.body) {
-                let x = tile.x
-                let y = tile.y
+    // Moves probabilities forward a move.
+    // TODO: make it so that it only adds probability score to outer layer of blocks.
+    // simulateHelper is the only other recursive function now, step should be checked compared to simulateHelper's iterations. Therefore iterations should be made global.
+    // Doesn't update probability of coordinate itself but the 'free' ones around it.
+    updateProbsHelper = function (coord, apiRequest, step) {
+        step++
 
-                apiRequest.board.possibilities[x][y]++
+        if (step > iterations) {
+            return
+        }
+
+        for (let option of this.snakeOptions(coord, apiRequest)) {
+            let count = this.snakeOptions(coord, apiRequest)
+            if (option == 'right') {
+                simRequest.board.possibilities[coord.x + 1][coord.y]
+                this.updateProbsHelper({x: coord.x + 1, y: coord.y}, apiRequest, step + 1)
+            } else if (option == 'left') {
+                simRequest.board.possibilities[coord.x - 1][coord.y]
+                this.updateProbsHelper({x: coord.x - 1, y: coord.y}, apiRequest, step + 1)
+            } else if (option == 'up') {
+                simRequest.board.possibilities[coord.x][coord.y - 1]
+                this.updateProbsHelper({x: coord.x, y: coord.y - 1}, apiRequest, step + 1)
+            } else if (option == 'down') {
+                simRequest.board.possibilities[coord.x][coord.y + 1]
+                this.updateProbsHelper({x: coord.x, y: coord.y + 1}, apiRequest, step + 1)
             }
         }
     }
-    // Returns list of moves that are least likely to collide.
-    probabilityFlow = function (apiRequest) {
-        let snake = apiRequest.you
-        this.updateProbabilities(apiRequest)
-        for (let other of apiRequest.board.snakes) {
-            // Ignoring probablity of own snake moving to a tile.
-            if (other.body.length == 0) {
-                continue
-            }
-            if (other.body[0].x == snake.body[0].x && other.body[0].y == snake.body[0].y) {
+    
+    updateProbs = function (apiRequest) {
+        for (let snake in apiRequest.board.snakes) {
+            // Don't update probabilities spreading from own snake head.
+            if (apiRequest.you.body[0].x == snake.body[0].x && apiRequest.you.body[0].y == snake.body[0].y) {
                 continue
             }
 
+            this.updateProbsHelper(snake.body[0], apiRequest, 0)
+        }
+    }
+    // TODO: Fix order that functions are called in, remove redundancy.
+    // Updates occupied tiles of board to have 100% probability.
+    currentProbs = function (apiRequest) {
+        let snake = apiRequest.you
+        for (let other of apiRequest.board.snakes) {
+            if (other.body.length == 0) {
+                continue
+            }
+
+            for (let tile of other.body) {
+                let x = tile.x
+                let y = tile.y
+
+                if (apiRequest.board.possibilities[x][y] != 1) {
+                    apiRequest.board.possibilities[x][y]++
+                }
+            }
+
+            if (other.body[0].x == snake.body[0].x && other.body[0].y == snake.body[0].y) {
+                continue
+            }
             let head = other.body[0]
-            for (let possibility of this.snakeOptions(other, apiRequest)) {
-                let count = this.snakeOptions(other, apiRequest).length
+            for (let possibility of this.snakeOptions(other.body[0], apiRequest)) {
+                let count = this.snakeOptions(other.body[0], apiRequest).length
                 if (possibility == 'right') {
                     apiRequest.board.possibilities[head.x + 1][head.y] += 1/count
                 } else if (possibility == 'left') {
@@ -193,11 +271,17 @@ class Thinking {
                 }
             }
         }
+    }
+    // Returns list of moves that are least likely to collide.
+    probabilityFlow = function (apiRequest) {
+        let snake = apiRequest.you
+        this.currentProbs(apiRequest)
+            
         let right = 1
         let left = 1
         let up = 1
         let down = 1
-        for (let option of this.snakeOptions(snake, apiRequest)) {
+        for (let option of this.snakeOptions(snake.body[0], apiRequest)) {
             if (option == 'right') {
                 right = apiRequest.board.possibilities[snake.body[0].x + 1][snake.body[0].y]
             } else if (option == 'left') {
@@ -356,7 +440,7 @@ function brain () {
     let feel = {left: 0, right: 0, up: 0, down: 0} // Moves that the snake wants to make depending on strategy.
     let thinking = new Thinking(request.you)
     let feeling = new Feeling()
-
+    
     for (let move of feeling.moveTowards(closestFood())) {
         let i = feel[move]
         if (i >= 0) {
@@ -378,7 +462,6 @@ function brain () {
     //         think[move] = 1
     //     }
     // }
-
     for (let move of thinking.simulate(requestText)) {
         let i = think[move]
         if (i >= 0) {
