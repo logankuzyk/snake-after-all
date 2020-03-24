@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 5 // Number of move iterations to be performed.
+let maxIterations = 10 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
@@ -97,7 +97,7 @@ class Thinking {
         head = simRequest.you.body[0]
         let prob = simRequest.board.possibilities[head.x][head.y]
         if (iterations > maxIterations) {
-            console.log("returning " + prob)
+            // console.log("returning " + prob)
             return prob
         }
         this.updateProbs(simRequest)
@@ -118,7 +118,7 @@ class Thinking {
                 }
 
                 // Moved into self.
-                console.log(other.body)
+                // console.log(other.body)
                 if (other.body[0].x == other.body[2].x && other.body[0].y == other.body[2].y) {
                     return 1
                 }
@@ -172,7 +172,7 @@ class Thinking {
 
         for (let move of ['left', 'right', 'up', 'down']) {
             // console.log('simulating ' + move)
-            console.log(move)
+            // console.log(move)
             iterations = 0
             result[move] = this.simulateHelper(apiRequest, move)
             // console.log(result[move])
@@ -238,7 +238,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        this.logProbabilities(apiRequest)
+        // this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
