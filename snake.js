@@ -472,6 +472,8 @@ function mood () {
         mode = 'hungry'
     } else if (feel.targetSnake().length > 0) {
         mode = 'hunt'
+    } else if (feel.targetSnake().length == 0) {
+        mode = 'hungry'
     } else {
         mode = 'exist'
     }
