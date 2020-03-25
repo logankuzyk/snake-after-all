@@ -104,7 +104,6 @@ class Thinking {
             return prob
         }
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
-        console.log(apiRequest.board.snakes[0])
         for (let other of apiRequest.board.snakes) {
             if (other.body.length == 1) {
                 continue
@@ -161,10 +160,8 @@ class Thinking {
             return 1
         }
 
-        console.log(snake.body[0])
         console.log('updating probabilities')
         // console.log(apiRequest.board.snakes[1])
-        console.log(apiRequest.board.snakes[0])
         this.updateProbs(apiRequest)
 
         if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
