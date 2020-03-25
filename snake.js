@@ -127,6 +127,11 @@ class Thinking {
             if (simRequest.board.possibilities[x][y] != 0) {
                 simRequest.board.possibilities[x][y]--
             }
+            for (let food in simRequest.board.food) {
+                if (other.body[0].x == food.x && other.body[0].y == food.y) {
+                    continue
+                }
+            }
             other.body.pop()
         }
         
