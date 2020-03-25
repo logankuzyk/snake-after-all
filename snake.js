@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 10 // Number of move iterations to be performed.
+let maxIterations = 6 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
@@ -118,7 +118,6 @@ class Thinking {
                 }
 
                 // Moved into self.
-                // console.log(other.body)
                 if (other.body[0].x == other.body[2].x && other.body[0].y == other.body[2].y) {
                     return 1
                 }
@@ -238,7 +237,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        // this.logProbabilities(apiRequest)
+        this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
