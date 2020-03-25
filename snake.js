@@ -354,6 +354,44 @@ class Feeling {
         return want
     }
 
+    // Returns moves attacking smallest snake.
+    // TODO: might want to make it go in front of target snake instead of beside.
+    targetSnake = function () {
+        let length = request.you.body.length
+        let target = request.board.snakes[0].body
+        for (snake of request.board.snakes) {
+            if (snake.body.length < target.length) {
+                target = snake
+            }
+        }
+        
+        if (target.length >= length) {
+            return []
+        } else {
+            // Right half of board.
+            if (target.body[0].x > request.board.width / 2) {
+                if (this.snakeDirection(target)[0] == 'up' || this.snakeDirection(target)[0] == 'down') {
+                    return this.moveTowards({'x': target.x - 1, 'y': target.y})
+                }
+            } else {
+                if (this.snakeDirection(target)[0] == 'up' || this.snakeDirection(target)[0] == 'down') {
+                    return this.moveTowards({'x': target.x + 1, 'y': target.y})
+                }
+            }
+            
+            // Bottom half of board.
+            if (target.body[0].y > request.board.height / 2) {
+                if (this.snakeDirection(target)[0] == 'right' || this.snakeDirection(target)[0] == 'left') {
+                    return this.moveTowards({'x': target.x, 'y': target.y - 1})
+                }
+            } else {
+                if (this.snakeDirection(target)[0] == 'right' || this.snakeDirection(target)[0] == 'left') {
+                    return this.moveTowards({'x': target.x, 'y': target.y + 1})
+                }
+            }
+        }
+    }
+
     // moveAway ({x, y}) {
     //     let want = []
         
@@ -427,8 +465,17 @@ class Feeling {
 
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
-    // Logic goes here
-    mode = 'general'
+    let snake = request.you
+    
+    if (snake.health < 40) {
+        mode = 'hungry'
+    } else if (this.targetSnake().length > 0) {
+        mode = 'hunt'
+    } else {
+        mode = 'exist'
+    }
+    
+    return mode
 }
 
 function closestFood () {
@@ -460,16 +507,28 @@ function brain () {
     let feel = {left: 0, right: 0, up: 0, down: 0} // Moves that the snake wants to make depending on strategy.
     let thinking = new Thinking(request.you)
     let feeling = new Feeling()
+    let state = mood()
 
-    for (let move of feeling.moveTowards(closestFood())) {
-        let i = feel[move]
-        if (i >= 0) {
-            feel[move]++
-        } else {
-            feel[move] = 1
+    if (state == 'hungry') {
+        for (let move of feeling.moveTowards(closestFood())) {
+            let i = feel[move]
+            if (i >= 0) {
+                feel[move]++
+            } else {
+                feel[move] = 1
+            }
+        }
+    } else if (state == 'hunt') {
+        for (let move of feeling.targetSnake()) {
+            let i = feel[move]
+            if (i >= 0) {
+                feel[move]++
+            } else {
+                feel[move] = 1
+            }
         }
     }
-
+    
     for (let move of feeling.diagonal(request.you)) {
         feel[move]++
     }
