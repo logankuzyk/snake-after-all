@@ -380,6 +380,22 @@ class Feeling {
     //     return want
     // }
 
+    // Returns directions to make snake go diagonally.
+    diagonal = function (snake) {
+        let dir = this.snakeDirection(snake)[0]
+
+        if (dir == 'left') {
+            return ['up', 'down']
+        } else if (dir == 'right') {
+            return ['down', 'up']
+        } else if (dir == 'up') {
+            return ['left', 'right']
+        } else if (dir == 'down') {
+            return ['right', 'left']
+        }
+    }
+
+    // Returns direction snake went on the last turn.
     snakeDirection = function (snake) {
         if (snake.body.length == 1) {
             return 'right'
@@ -444,7 +460,7 @@ function brain () {
     let feel = {left: 0, right: 0, up: 0, down: 0} // Moves that the snake wants to make depending on strategy.
     let thinking = new Thinking(request.you)
     let feeling = new Feeling()
-    
+
     for (let move of feeling.moveTowards(closestFood())) {
         let i = feel[move]
         if (i >= 0) {
@@ -452,6 +468,10 @@ function brain () {
         } else {
             feel[move] = 1
         }
+    }
+
+    for (let move of feeling.diagonal(request.you)) {
+        feel[move]++
     }
 
     // for (let move of feeling.snakeDirection(request.you)) {
