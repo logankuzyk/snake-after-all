@@ -100,7 +100,7 @@ class Thinking {
         head = apiRequest.you.body[0]
         let prob = apiRequest.board.possibilities[head.x][head.y]
         if (iterations > maxIterations) {
-            console.log('ran out of iterations')
+            // console.log('ran out of iterations')
             return 0
         }
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
@@ -124,13 +124,13 @@ class Thinking {
                 }
                 // Moved into self.
                 if (other.body[0].x == other.body[2].x && other.body[0].y == other.body[2].y) {
-                    console.log('moved into self')
-                    console.log(other.body)
+                    // console.log('moved into self')
+                    // console.log(other.body)
                     return 0
                 }
                 for (let food of apiRequest.board.food) {
                     if (Math.abs(other.body[0].x - food.x) == 1 || Math.abs(other.body[0].y - food.y) == 1) {
-                        console.log('CLOSE TO FOOD')
+                        // console.log('CLOSE TO FOOD')
                         food = {}
                         other.body[other.body.length] = other.body[other.body.length - 1]
                     }
@@ -144,7 +144,7 @@ class Thinking {
             }
             for (let food of apiRequest.board.food) {
                 if (Math.abs(other.body[0].x - food.x) == 1 || Math.abs(other.body[0].y - food.y) == 1) {
-                    console.log('CLOSE TO FOOD')
+                    // console.log('CLOSE TO FOOD')
                     food = {}
                     other.body[other.body.length] = other.body[other.body.length - 1]
                 }
@@ -153,14 +153,14 @@ class Thinking {
         }
         // Check if snake moved off the board.
         if (0 > snake.body[0].x || snake.body[0].x >= apiRequest.board.width) {
-            console.log('moved off horizontal')
+            // console.log('moved off horizontal')
             return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= apiRequest.board.height) {
-            console.log('moved off vertical')
+            // console.log('moved off vertical')
             return 0
         }
 
-        console.log('updating probabilities')
+        // console.log('updating probabilities')
         // console.log(apiRequest.board.snakes[1])
         this.updateProbs(apiRequest)
 
@@ -177,7 +177,7 @@ class Thinking {
             // console.log(result[move])
         }
         // Logic for returning the move that sums to the least amount of probability.
-        console.log(result)
+        // console.log(result)
         let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
         console.log('returning prob + min - 1')
