@@ -359,7 +359,7 @@ class Feeling {
     targetSnake = function () {
         let length = request.you.body.length
         let target = request.board.snakes[0].body
-        for (snake of request.board.snakes) {
+        for (let snake of request.board.snakes) {
             if (snake.body.length < target.length) {
                 target = snake
             }
@@ -466,10 +466,11 @@ class Feeling {
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
     let snake = request.you
-    
+    let feel = new Feeling()
+
     if (snake.health < 40) {
         mode = 'hungry'
-    } else if (this.targetSnake().length > 0) {
+    } else if (feel.targetSnake().length > 0) {
         mode = 'hunt'
     } else {
         mode = 'exist'
