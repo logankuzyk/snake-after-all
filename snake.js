@@ -89,7 +89,7 @@ class Thinking {
     }
 
     simulateHelper = function (apiRequest, move) {
-        console.log(move)
+        // console.log(move)
         if (typeof(apiRequest) == 'string') {
             apiRequest = JSON.parse(apiRequest)
         }
@@ -165,7 +165,7 @@ class Thinking {
         this.updateProbs(apiRequest)
 
         if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
-            console.log('moved onto high prob tile')
+            // console.log('moved onto high prob tile')
             return 0
         }
 
@@ -180,8 +180,7 @@ class Thinking {
         // console.log(result)
         let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
-        console.log('returning prob + min - 1')
-        return 1 + max
+        return max
     }
 
     // Makes decision between simulated directions.
