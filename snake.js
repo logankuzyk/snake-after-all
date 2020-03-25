@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 6 // Number of move iterations to be performed.
+let maxIterations = 5 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
@@ -127,8 +127,9 @@ class Thinking {
             if (simRequest.board.possibilities[x][y] != 0) {
                 simRequest.board.possibilities[x][y]--
             }
-            for (let food in simRequest.board.food) {
+            for (let food of simRequest.board.food) {
                 if (Math.abs(other.body[0].x - food.x) == 1 || Math.abs(other.body[0].y - food.y) == 1) {
+                    console.log('CLOSE TO FOOD')
                     continue
                 }
             }
