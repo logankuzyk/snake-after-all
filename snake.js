@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 5 // Number of move iterations to be performed.
+let maxIterations = 3 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
