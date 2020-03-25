@@ -530,10 +530,10 @@ function brain () {
                 feel[move] = 1
             }
         }
-    }
-    
-    for (let move of feeling.diagonal(request.you)) {
-        feel[move]++
+    } else if (state == 'exist') {
+        for (let move of feeling.diagonal(request.you)) {
+            feel[move]++
+        }
     }
 
     // for (let move of feeling.snakeDirection(request.you)) {
