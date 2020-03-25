@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 2 // Number of move iterations to be performed.
+let maxIterations = 5 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
@@ -101,7 +101,7 @@ class Thinking {
         let prob = apiRequest.board.possibilities[head.x][head.y]
         if (iterations > maxIterations) {
             console.log('ran out of iterations')
-            return prob
+            return 0
         }
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
         for (let other of apiRequest.board.snakes) {
@@ -126,7 +126,7 @@ class Thinking {
                 if (other.body[0].x == other.body[2].x && other.body[0].y == other.body[2].y) {
                     console.log('moved into self')
                     console.log(other.body)
-                    return 1
+                    return 0
                 }
                 for (let food of apiRequest.board.food) {
                     if (Math.abs(other.body[0].x - food.x) == 1 || Math.abs(other.body[0].y - food.y) == 1) {
@@ -154,10 +154,10 @@ class Thinking {
         // Check if snake moved off the board.
         if (0 > snake.body[0].x || snake.body[0].x >= apiRequest.board.width) {
             console.log('moved off horizontal')
-            return 1
+            return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= apiRequest.board.height) {
             console.log('moved off vertical')
-            return 1
+            return 0
         }
 
         console.log('updating probabilities')
@@ -166,7 +166,7 @@ class Thinking {
 
         if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
             console.log('moved onto high prob tile')
-            return 1
+            return 0
         }
 
         let result = {right: 1, left: 1, up: 1, down: 1}
@@ -178,10 +178,10 @@ class Thinking {
         }
         // Logic for returning the move that sums to the least amount of probability.
         console.log(result)
-        let min = Math.min(result.right, result.left, result.up, result.down)
+        let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
         console.log('returning prob + min - 1')
-        return prob + min - 1
+        return 1 + max
     }
 
     // Makes decision between simulated directions.
@@ -197,14 +197,14 @@ class Thinking {
             // console.log(result[move])
         }
 
-        let min = Math.min(result.right, result.left, result.up, result.down)
-        if (result['right'] == min) {
+        let max = Math.max(result.right, result.left, result.up, result.down)
+        if (result['right'] == max) {
             final.push('right')
-        } if (result['left'] == min) {
+        } if (result['left'] == max) {
             final.push('left')
-        } if (result['up'] == min) {
+        } if (result['up'] == max) {
             final.push('up')
-        } if (result['down'] == min) {
+        } if (result['down'] == max) {
             final.push('down')
         }
         console.log('8 BALL SAYS:')
