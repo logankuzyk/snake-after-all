@@ -128,7 +128,7 @@ class Thinking {
                 simRequest.board.possibilities[x][y]--
             }
             for (let food in simRequest.board.food) {
-                if (other.body[0].x == food.x && other.body[0].y == food.y) {
+                if (Math.abs(other.body[0].x - food.x) == 1 || Math.abs(other.body[0].y - food.y) == 1) {
                     continue
                 }
             }
