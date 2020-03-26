@@ -17,7 +17,8 @@ let request = {
           "name": "Sneky Snek",
           "health": 90,
           "body": [
-            {"x": 1, "y": 0}, {'x': 0, 'y':0},
+            {"x": 9, "y": 9}, {'x': 10, 'y':9}, {"x": 10, "y": 10},{"x": 9, "y": 10},{"x": 8, "y": 10},{"x": 8, "y": 9},{"x": 8, "y": 8},{"x": 8, "y": 7},{"x": 8, "y": 7},{"x": 8, "y": 6},{"x": 8, "y": 5},
+
           ],
           "shout": "Hello my name is Sneky Snek"
         },
@@ -26,7 +27,7 @@ let request = {
           "name": "Sneky Snek",
           "health": 90,
           "body": [
-            {'x':4 , 'y': 1}, {'x':4,'y':0}
+            {'x':4 , 'y': 5}, {'x':4,'y':5}
           ],
           "shout": "Hello my name is Sneky Snek"
         },
@@ -38,7 +39,7 @@ let request = {
       "health": 90,
       "body": [
         // {"x": 10, "y": 1}, {"x": 10, "y": 2}, {"x": 9, "y": 2}
-        {"x": 1, "y": 0}, {'x': 0, 'y':0}
+        {"x": 9, "y": 9}, {'x': 10, 'y':9}, {"x": 10, "y": 10},{"x": 9, "y": 10},{"x": 8, "y": 10},{"x": 8, "y": 9},{"x": 8, "y": 8},{"x": 8, "y": 7},{"x": 8, "y": 7},{"x": 8, "y": 6},{"x": 8, "y": 5},
       ],
       "shout": "Hello my name is Sneky Snek"
     }
