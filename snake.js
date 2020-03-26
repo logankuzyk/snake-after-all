@@ -473,21 +473,20 @@ class Feeling {
 
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
-    // let snake = request.you
-    // let feel = new Feeling()
+    let snake = request.you
+    let feel = new Feeling()
 
-    // if (snake.health < 80) {
-    //     mode = 'hungry'
-    // } else if (feel.targetSnake().length > 0) {
-    //     mode = 'hunt'
-    // } else if (feel.targetSnake().length == 0) {
-    //     mode = 'hungry'
-    // } else {
-    //     mode = 'exist'
-    // }
+    if (snake.health < 80) {
+        mode = 'hungry'
+    } else if (feel.targetSnake().length > 0) {
+        mode = 'hunt'
+    } else if (feel.targetSnake().length == 0) {
+        mode = 'hungry'
+    } else {
+        mode = 'exist'
+    }
     
-    // return mode
-    return 'hungry'
+    return mode
 }
 
 function closestFood () {
@@ -531,6 +530,13 @@ function brain () {
                 feel[move] = 1
             }
         }
+    } else if (state == 'hunt') {
+        let finalRequest = JSON.parse(requestText)
+        thinking.updateProbs(finalRequest)
+        for (let move of thinking.probabilityFlow(finalRequest)) {
+        console.log(move)
+        feel[move]++
+    }
     } else {
         for (let move of feeling.diagonal(request.you)) {
             feel[move]++
@@ -557,13 +563,6 @@ function brain () {
         }
     }
     iterations = 0
-    
-    let finalRequest = JSON.parse(requestText)
-    thinking.updateProbs(finalRequest)
-    for (let move of thinking.probabilityFlow(finalRequest)) {
-        console.log(move)
-        feel[move]++
-    }
 
     // Removing suicidal moves.
     for (let move in feel) {
