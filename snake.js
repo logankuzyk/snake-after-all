@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 7 // Number of move iterations to be performed.
+let maxIterations = 5 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
@@ -238,7 +238,7 @@ class Thinking {
             newStorage.push([move, coord, mode])
         }
     }
-    // NEED TO COMPARE WITH THE SAME APIREQUST
+
     updateProbs = function (apiRequest) {
         this.currentProbs(apiRequest)
         let lengths = {}
@@ -501,6 +501,7 @@ function closestFood () {
         // console.log(Math.sqrt(deltax**2 + deltay**2))
         if (Math.sqrt(deltax**2 + deltay**2) < minDistance) {
             // console.log(food)
+            minDistance = Math.sqrt(deltax**2 + deltay**2)
             minFood = food
         }
     }
@@ -514,80 +515,13 @@ function closestFood () {
 }
 
 function brain () {
-    let think = {left: 0, right: 0, up: 0, down: 0} // Moves that can be made in order to stay alive.
-    let feel = {left: 0, right: 0, up: 0, down: 0} // Moves that the snake wants to make depending on strategy.
-    let thinking = new Thinking(request.you)
-    let feeling = new Feeling()
-    let state = mood()
+    let feel = new Feeling()
+    let think = new Thinking()
 
-    console.log(state)
-    if (state == 'hungry') {
-        for (let move of feeling.moveTowards(closestFood())) {
-            let i = feel[move]
-            if (i >= 0) {
-                feel[move]++
-            } else {
-                feel[move] = 1
-            }
-        }
-    } else if (state == 'hunt') {
-        iterations = 0
-        let finalRequest = JSON.parse(requestText)
-        thinking.updateProbs(finalRequest)
-        for (let move of thinking.probabilityFlow(finalRequest)) {
-        console.log(move)
-        feel[move]++
-    }
-    } else {
-        for (let move of feeling.diagonal(request.you)) {
-            feel[move]++
-        }
-    }
-    // for (let move of feeling.snakeDirection(request.you)) {
-    //     feel[move]++
-    // }
+    mood()
 
-    // for (let move of thinking.snakeOptions(request.you)) {
-    //     let i = think[move]
-    //     if (i >= 0) {
-    //         think[move]++
-    //     } else {
-    //         think[move] = 1
-    //     }
-    // }
-    for (let move of thinking.simulate(requestText)) {
-        let i = feel[move]
-        if (i >= 0) {
-            feel[move]++
-        } else {
-            feel[move] = 1
-        }
-    }
+    if (mode = 'hungry') {
 
-    for (let move of thinking.snakeOptions(request.you.body[0], request)) {
-        think[move]++
-    }
-    
-    // Removing suicidal moves.
-    for (let move in feel) {
-        let rem = think[move]
-        if (rem == 0) {
-            feel[move] = 0
-        } else {
-            feel[move]++
-        }
-    }
-
-    // Finding most popular non suicidal move. (One with the most "votes")
-    let max = Math.max(feel.right, feel.left, feel.up, feel.down)
-    
-    // console.log(think)
-    // console.log(feel)
-
-    for (let move of Object.keys(feel)) {
-        if (feel[move] == max) {
-            return move
-        }
     }
 }
 
