@@ -531,6 +531,7 @@ function brain () {
             }
         }
     } else if (state == 'hunt') {
+        iterations = 0
         let finalRequest = JSON.parse(requestText)
         thinking.updateProbs(finalRequest)
         for (let move of thinking.probabilityFlow(finalRequest)) {
@@ -555,15 +556,18 @@ function brain () {
     //     }
     // }
     for (let move of thinking.simulate(requestText)) {
-        let i = think[move]
+        let i = feel[move]
         if (i >= 0) {
-            think[move]++
+            feel[move]++
         } else {
-            think[move] = 1
+            feel[move] = 1
         }
     }
-    iterations = 0
 
+    for (let move of thinking.snakeOptions(request.you.body[0], request)) {
+        think[move]++
+    }
+    
     // Removing suicidal moves.
     for (let move in feel) {
         let rem = think[move]
