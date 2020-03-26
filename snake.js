@@ -266,7 +266,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        this.logProbabilities(apiRequest)
+        // this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
