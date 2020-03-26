@@ -373,7 +373,7 @@ class Feeling {
             }
         }
         
-        if (target.length >= length) {
+        if (target.length + 2 > length) {
             return []
         } else {
             // Right half of board.
