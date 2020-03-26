@@ -265,7 +265,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        this.logProbabilities(apiRequest)
+        // this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
@@ -275,9 +275,9 @@ class Thinking {
                 let x = tile.x
                 let y = tile.y
 
-                // if (apiRequest.board.possibilities[x][y] != 1) {
+                if (apiRequest.board.possibilities[x][y] != 1) {
                     apiRequest.board.possibilities[x][y]++
-                // }
+                }
             }
         }
     }
@@ -472,20 +472,21 @@ class Feeling {
 
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
-    let snake = request.you
-    let feel = new Feeling()
+    // let snake = request.you
+    // let feel = new Feeling()
 
-    if (snake.health < 80) {
-        mode = 'hungry'
-    } else if (feel.targetSnake().length > 0) {
-        mode = 'hunt'
-    } else if (feel.targetSnake().length == 0) {
-        mode = 'hungry'
-    } else {
-        mode = 'exist'
-    }
+    // if (snake.health < 80) {
+    //     mode = 'hungry'
+    // } else if (feel.targetSnake().length > 0) {
+    //     mode = 'hunt'
+    // } else if (feel.targetSnake().length == 0) {
+    //     mode = 'hungry'
+    // } else {
+    //     mode = 'exist'
+    // }
     
-    return mode
+    // return mode
+    return 'hungry'
 }
 
 function closestFood () {
@@ -534,7 +535,6 @@ function brain () {
             feel[move]++
         }
     }
-
     // for (let move of feeling.snakeDirection(request.you)) {
     //     feel[move]++
     // }
@@ -554,6 +554,14 @@ function brain () {
         } else {
             think[move] = 1
         }
+    }
+    iterations = 0
+    
+    let finalRequest = JSON.parse(requestText)
+    thinking.updateProbs(finalRequest)
+    for (let move of thinking.probabilityFlow(finalRequest)) {
+        console.log(move)
+        feel[move]++
     }
 
     // Removing suicidal moves.
