@@ -1,7 +1,7 @@
 let request = {}
 let requestText = ''
 let mode = ''
-let maxIterations = 5 // Number of move iterations to be performed.
+let maxIterations = 7 // Number of move iterations to be performed.
 let iterations = 0
 let storage = []
 let newStorage = []
@@ -180,7 +180,7 @@ class Thinking {
         // console.log(result)
         let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
-        return max
+        return max + 1
     }
 
     // Makes decision between simulated directions.
@@ -467,7 +467,7 @@ function mood () {
     let snake = request.you
     let feel = new Feeling()
 
-    if (snake.health < 40) {
+    if (snake.health < 80) {
         mode = 'hungry'
     } else if (feel.targetSnake().length > 0) {
         mode = 'hunt'
@@ -511,6 +511,7 @@ function brain () {
     let feeling = new Feeling()
     let state = mood()
 
+    console.log(state)
     if (state == 'hungry') {
         for (let move of feeling.moveTowards(closestFood())) {
             let i = feel[move]
@@ -529,7 +530,7 @@ function brain () {
                 feel[move] = 1
             }
         }
-    } else if (state == 'exist') {
+    } else {
         for (let move of feeling.diagonal(request.you)) {
             feel[move]++
         }
