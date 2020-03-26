@@ -187,12 +187,13 @@ class Thinking {
     simulate = function (apiRequest) {
         let result = {right: 0, left: 0, up: 0, down: 0}
         let final = []
-        
-        for (let move of ['left', 'right', 'up', 'down']) {
+        apiRequest = JSON.parse(apiRequest)
+
+        for (let move of this.snakeOptions(request.you.body[0], apiRequest)) {
             // console.log('simulating ' + move)
             // console.log(move)
             iterations = 0
-            result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
+            result[move] = this.simulateHelper(apiRequest, move)
             // console.log(result[move])
         }
 
@@ -265,7 +266,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        // this.logProbabilities(apiRequest)
+        this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
