@@ -265,7 +265,7 @@ class Thinking {
         let lengths = {}
         if (iterations <= 1) {
             for (let other of request.board.snakes) {
-                lengths[other.id] = other.body.length
+                lengths[other.id] = other.body.length + 1
             }
             for (let other of apiRequest.board.snakes) {
                 if (other.body.length < 2 || other.body[0].x == apiRequest.you.body[0].x && other.body[0].y == apiRequest.you.body[0].y) {
