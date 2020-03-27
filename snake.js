@@ -212,10 +212,11 @@ class Thinking {
             iterations = 0
             result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
         }
-        console.log(bigIterations)
+
         let max = Math.max(result.right, result.left, result.up, result.down)
         if (max < maxIterations && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
-            console.log('desired moves are impossible or bad')
+            console.log('desired moves are impossible or bad:')
+            console.log(result)
             return this.simulate(possible, apiRequest)
         }
         if (result['right'] == max) {
@@ -250,24 +251,34 @@ class Thinking {
 
         for (let move of moves) {
             // console.log(move)
-            apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
-            newStorage.push([move, coord])
+            if (mode == 'bigger') {
+                apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
+            } else if (mode == 'smaller') {
+                // apiRequest.board.possibilities[move.x][move.y] -= apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
+            }
+            newStorage.push([move, coord, mode])
         }
     }
 
     updateProbs = function (apiRequest) {
         this.currentProbs(apiRequest)
+        let lengths = {}
         if (iterations <= 1) {
+            for (let other of request.board.snakes) {
+                lengths[other.id] = other.body.length
+            }
             for (let other of apiRequest.board.snakes) {
                 if (other.body.length < 2 || other.body[0].x == apiRequest.you.body[0].x && other.body[0].y == apiRequest.you.body[0].y) {
                     continue
+                } else if (lengths[other.id] < request.you.body.length) {
+                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest, 'smaller')
                 } else {
-                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest)
+                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest, 'bigger')
                 }
             }
         } else {
             for (let member of storage) {
-                this.updateProbsHelper(member[0], member[1], apiRequest)
+                this.updateProbsHelper(member[0], member[1], apiRequest, member[2])
             }
         }
         // Dumps newStorage into storage and resets newStorage.
