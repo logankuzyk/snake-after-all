@@ -467,6 +467,7 @@ function brain () {
         }
     } else if (mode == 'attack') {
         if (think.simulate(feel.targetSnake()[0], requestText) >= iterations) {
+            console.log(request)
             return feel.targetSnake()[0]
         }
     } else {
