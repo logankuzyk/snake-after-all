@@ -89,20 +89,18 @@ class Thinking {
     }
 
     simulateHelper = function (apiRequest, move) {
-        // console.log(move)
         if (typeof(apiRequest) == 'string') {
             apiRequest = JSON.parse(apiRequest)
         }
         let snake = apiRequest.you
         let head = snake.body[0]
-        iterations++
-
         head = apiRequest.you.body[0]
         let prob = apiRequest.board.possibilities[head.x][head.y]
         if (iterations > maxIterations) {
             // console.log('ran out of iterations')
             return 0
         }
+        iterations++
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
         for (let other of apiRequest.board.snakes) {
             if (other.body.length == 1) {
@@ -184,44 +182,23 @@ class Thinking {
     }
 
     // Makes decision between simulated directions.
-    simulate = function (apiRequest) {
-        let result = {right: 0, left: 0, up: 0, down: 0}
-        let final = []
+    simulate = function (move, apiRequest) {
+        iterations = 0
         apiRequest = JSON.parse(apiRequest)
-
-        for (let move of this.snakeOptions(request.you.body[0], apiRequest)) {
-            // console.log('simulating ' + move)
-            // console.log(move)
-            iterations = 0
-            result[move] = this.simulateHelper(apiRequest, move)
-            // console.log(result[move])
-        }
-
-        let max = Math.max(result.right, result.left, result.up, result.down)
-        if (result['right'] == max) {
-            final.push('right')
-        } if (result['left'] == max) {
-            final.push('left')
-        } if (result['up'] == max) {
-            final.push('up')
-        } if (result['down'] == max) {
-            final.push('down')
-        }
-        console.log('8 BALL SAYS:')
-        console.log(result)
-        return final
+        return this.simulateHelper(apiRequest, move)
     }
     
     // Moves probabilities forward a move.
     // TODO: make it so that it only adds probability score to outer layer of blocks.
     // simulateHelper is the only other recursive function now, step should be checked compared to simulateHelper's iterations. Therefore iterations should be made global.
     // Doesn't update probability of coordinate itself but the 'free' ones around it.
-    updateProbsHelper = function (coord, lastCoord, apiRequest, mode) {
+    updateProbsHelper = function (coord, lastCoord, apiRequest) {
         let moves = [{x: coord.x + 1, y: coord.y}, {x: coord.x - 1, y: coord.y}, {x: coord.x, y: coord.y + 1}, {x: coord.x, y: coord.y - 1}]
         for (let i = 0; i < moves.length; i++) {
             if (moves[i].x == lastCoord.x && moves[i].y == lastCoord.y || moves[i].x >= apiRequest.board.width || moves[i].y >= apiRequest.board.height || moves[i].x < 0 || moves[i].y < 0) {
                 let rem = i
                 if (rem >= 0) {
+                    console.log('removed move')
                     moves.splice(rem, 1)
                     i--
                 }
@@ -230,34 +207,24 @@ class Thinking {
 
         for (let move of moves) {
             // console.log(move)
-            if (mode == 'plus') {
-                apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
-            } else if (mode == 'minus') {
-                apiRequest.board.possibilities[move.x][move.y] -= apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
-            }
-            newStorage.push([move, coord, mode])
+            apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
+            newStorage.push([move, coord])
         }
     }
 
     updateProbs = function (apiRequest) {
         this.currentProbs(apiRequest)
-        let lengths = {}
         if (iterations <= 1) {
-            for (let other of request.board.snakes) {
-                lengths[other.id] = other.body.length
-            }
             for (let other of apiRequest.board.snakes) {
                 if (other.body.length < 2 || other.body[0].x == apiRequest.you.body[0].x && other.body[0].y == apiRequest.you.body[0].y) {
                     continue
-                } else if (lengths[other.id] < request.you.body.length) {
-                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest, 'minus')
                 } else {
-                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest, 'plus')
+                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest)
                 }
             }
         } else {
             for (let member of storage) {
-                this.updateProbsHelper(member[0], member[1], apiRequest, member[2])
+                this.updateProbsHelper(member[0], member[1], apiRequest)
             }
         }
         // Dumps newStorage into storage and resets newStorage.
@@ -362,69 +329,43 @@ class Feeling {
         return want
     }
 
-    // Returns moves attacking smallest snake.
-    // TODO: might want to make it go in front of target snake instead of beside.
-    targetSnake = function () {
-        let length = request.you.body.length
-        let target = request.board.snakes[0].body
-        for (let snake of request.board.snakes) {
-            if (snake.body.length < target.length) {
-                target = snake
+    moveAway = function ({x, y}) {
+        let opp = this.moveTowards({x, y})
+        let want = ['right', 'left', 'up', 'down']
+
+        for (move of opp) {
+            let rem = want.indexOf(move)
+            if (rem >= 0) {
+                want.splice(rem, 1)
             }
         }
         
-        if (target.length + 2 > length) {
-            return []
-        } else {
-            // Right half of board.
-            if (target.body[0].x > request.board.width / 2) {
-                if (this.snakeDirection(target)[0] == 'up' || this.snakeDirection(target)[0] == 'down') {
-                    return this.moveTowards({'x': target.x - 1, 'y': target.y})
-                }
-            } else {
-                if (this.snakeDirection(target)[0] == 'up' || this.snakeDirection(target)[0] == 'down') {
-                    return this.moveTowards({'x': target.x + 1, 'y': target.y})
-                }
-            }
-            
-            // Bottom half of board.
-            if (target.body[0].y > request.board.height / 2) {
-                if (this.snakeDirection(target)[0] == 'right' || this.snakeDirection(target)[0] == 'left') {
-                    return this.moveTowards({'x': target.x, 'y': target.y - 1})
-                }
-            } else {
-                if (this.snakeDirection(target)[0] == 'right' || this.snakeDirection(target)[0] == 'left') {
-                    return this.moveTowards({'x': target.x, 'y': target.y + 1})
-                }
-            }
-        }
+        return want
     }
 
-    // moveAway ({x, y}) {
-    //     let want = []
+    // Returns moves attacking the closest smaller snake.
+    targetSnake = function () {
+        let target = [request.you, 100]
+        for (let snake of request.board.snakes) {
+            if (snake.body.length < target[0].body.length && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
+                target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
+            }
+        }
         
-    //     if (request.you.body[0].x > x) {
-    //         if (want.indexOf('right') < 0) {
-    //             want.push('right')
-    //         }
-    //     } else if (request.you.body[0].x < x) {
-    //         if (want.indexOf('left') < 0) {
-    //             want.push('left')
-    //         }
-    //     }
-
-    //     if (request.you.body[0].y < y) {
-    //         if (want.indexOf('up') < 0) {
-    //             want.push('up')
-    //         }
-    //     } else if (request.you.body[0].y > y){
-    //         if (want.indexOf('down') < 0) {
-    //             want.push('down')
-    //         }
-    //     }
-
-    //     return want
-    // }
+        if (target[0].length == request.you.body.length) {
+            return null
+        }
+        
+        if (this.snakeDirection(target[0]) == 'right') {
+            return this.moveTowards({'x': target[0].body[0].x + 1, 'y': target[0].body[0].y})
+        } else if (this.snakeDirection(target[0]) == 'left') {
+            return this.moveTowards({'x': target[0].body[0].x - 1, 'y': target[0].body[0].y})
+        } else if (this.snakeDirection(target[0]) == 'up') {
+            return this.moveTowards({'x': target[0].body[0].x, 'y': target[0].body[0].y - 1})
+        } else if (this.snakeDirection(target[0]) ==  'down') {
+            return this.moveTowards({'x': target[0].body[0].x, 'y': target[0].body[0].y + 1})
+        }
+    }
 
     // Returns directions to make snake go diagonally.
     diagonal = function (snake) {
@@ -469,59 +410,69 @@ class Feeling {
             return ['down']
         }
     }
+
+    distanceBetween = function (coord1, coord2) {
+        let x1 = coord1.x
+        let x2 = coord2.x
+        let y1 = coord1.y
+        let y2 = coord2.y
+
+        return Math.sqrt((y1 - y2)**2 + (x1 - x2)**2)
+    }
+
+    closestFood = function () {
+        let minDistance = 100 // TODO: make this unhard coded.
+        let minFood = {}
+    
+        for (let food of request.board.food) {
+            if (this.distanceBetween(request.you.body[0], food) < minDistance) {
+                // console.log(food)
+                minDistance = this.distanceBetween(request.you.body[0], food)
+                minFood = food
+            }
+        }
+        // console.log('closest food is ' + minDistance + " away " + minFood.x + " " + minFood.y)
+        
+        if (minDistance == 100) {
+            return request.board.food[0]
+        }
+    
+        return minFood
+    }
 }
 
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
-    let snake = request.you
     let feel = new Feeling()
-
-    if (snake.health < 80) {
+    
+    if (request.you.health < 90) {
         mode = 'hungry'
-    } else if (feel.targetSnake().length > 0) {
-        mode = 'hunt'
-    } else if (feel.targetSnake().length == 0) {
-        mode = 'hungry'
+    } else if (feel.targetSnake() != null) {
+        mode = 'attack'
     } else {
-        mode = 'exist'
+        mode = 'hungry'
     }
-    
-    return mode
-}
-
-function closestFood () {
-    let x = request.you.body[0].x
-    let y = request.you.body[0].y
-    let minDistance = 100 // TODO: make this unhard coded.
-    let minFood = {}
-
-    for (let food of request.board.food) {
-        let deltax = food.x - x
-        let deltay = food.y - y
-        // console.log(Math.sqrt(deltax**2 + deltay**2))
-        if (Math.sqrt(deltax**2 + deltay**2) < minDistance) {
-            // console.log(food)
-            minDistance = Math.sqrt(deltax**2 + deltay**2)
-            minFood = food
-        }
-    }
-    // console.log('closest food is ' + minDistance + " away " + minFood.x + " " + minFood.y)
-    
-    if (minDistance == 100) {
-        return request.board.food[0]
-    }
-
-    return minFood
 }
 
 function brain () {
     let feel = new Feeling()
     let think = new Thinking()
+    let possible = think.snakeOptions(request.you.body[0], request)
 
     mood()
-
-    if (mode = 'hungry') {
-
+    console.log(mode)
+    if (mode == 'hungry') {
+        if (think.simulate(feel.moveTowards(feel.closestFood())[0], requestText) >= iterations) {
+            return feel.moveTowards(feel.closestFood())[0]
+        }
+    } else if (mode == 'attack') {
+        console.log(think.simulate(feel.moveTowards(feel.targetSnake())[0], requestText))
+        console.log(iterations)
+        if (think.simulate(feel.targetSnake()[0], requestText) >= iterations) {
+            return feel.targetSnake()[0]
+        }
+    } else {
+        return possible[0]
     }
 }
 
