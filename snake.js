@@ -212,9 +212,9 @@ class Thinking {
             iterations = 0
             result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
         }
-
+        console.log(bigIterations)
         let max = Math.max(result.right, result.left, result.up, result.down)
-        if (max < maxIterations && bigIterations == 1) {
+        if (max < maxIterations && bigIterations < maxIterations) {
             console.log('desired moves are impossible or bad')
             return this.simulate(possible, apiRequest)
         }
