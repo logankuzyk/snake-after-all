@@ -94,7 +94,6 @@ class Thinking {
         }
         let snake = apiRequest.you
         let head = snake.body[0]
-        head = apiRequest.you.body[0]
         if (iterations > maxIterations) {
             // console.log('ran out of iterations')
             return 0
@@ -119,11 +118,11 @@ class Thinking {
                     snake.body.unshift({x: head.x, y: head.y + 1})
                 }
                 // Moved into self.
-                if (other.body[0].x == other.body[2].x && other.body[0].y == other.body[2].y) {
-                    // console.log('moved into self')
-                    // console.log(other.body)
-                    return 0
-                }
+                // if (other.body[0].x == other.body[2].x && other.body[0].y == other.body[2].y) {
+                //     // console.log('moved into self')
+                //     // console.log(other.body)
+                //     return 0
+                // }
                 for (let food of apiRequest.board.food) {
                     if (Math.abs(other.body[0].x - food.x) == 1 || Math.abs(other.body[0].y - food.y) == 1) {
                         // console.log('CLOSE TO FOOD')
@@ -155,6 +154,21 @@ class Thinking {
             // console.log('moved off vertical')
             return 0
         }
+        head = snake.body[0]
+        for (let other of apiRequest.board.snakes) {
+            for (let member of other.body) {
+                // console.log(other.body.indexOf(member))
+                // console.log(head)
+                // console.log(member)
+                if (other.body.indexOf(member) == 0 && head.x == member.x && head.y == member.y) {
+                    continue
+                }
+                if (head.x == member.x && head.y == member.y) {
+                    // console.log('moved into snake')
+                    return 0
+                }
+            }
+        }
 
         // console.log('updating probabilities')
         // console.log(apiRequest.board.snakes[1])
@@ -167,7 +181,7 @@ class Thinking {
 
         iterations++
 
-        let result = {right: 1, left: 1, up: 1, down: 1}
+        let result = {right: 0, left: 0, up: 0, down: 0}
         let newRequest = JSON.stringify(apiRequest)
         for (let move of this.probabilityFlow(apiRequest)) {
             // console.log('simulating ' + move)
@@ -187,18 +201,19 @@ class Thinking {
         let final = []
         let possible = this.snakeOptions(request.you.body[0], request)
 
+        if (possible.length == 0) {
+            return []
+        }
+
         for (let move of moves) {
-            if (possible.indexOf(move) < 0) {
-                result[move] = 0
-                continue
-            }
             iterations = 0
             result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
         }
 
         let max = Math.max(result.right, result.left, result.up, result.down)
         if (max == 0) {
-            return possible
+            console.log('desired moves are impossible')
+            return this.simulate(possible, apiRequest)
         }
         if (result['right'] == max) {
             final.push('right')
@@ -258,7 +273,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        this.logProbabilities(apiRequest)
+        // this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
