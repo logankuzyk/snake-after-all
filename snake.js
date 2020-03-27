@@ -211,8 +211,8 @@ class Thinking {
         }
 
         let max = Math.max(result.right, result.left, result.up, result.down)
-        if (max == 0) {
-            console.log('desired moves are impossible')
+        if (max < maxIterations) {
+            console.log('desired moves are impossible or bad')
             return this.simulate(possible, apiRequest)
         }
         if (result['right'] == max) {
