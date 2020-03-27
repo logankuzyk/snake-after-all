@@ -182,10 +182,28 @@ class Thinking {
     }
 
     // Makes decision between simulated directions.
-    simulate = function (move, apiRequest) {
-        iterations = 0
-        apiRequest = JSON.parse(apiRequest)
-        return this.simulateHelper(apiRequest, move)
+    simulate = function (moves, apiRequest) {
+        let result = {'left': 0, 'right': 0, 'up': 0, 'down': 0}
+        let final = []
+
+        for (let move of moves) {
+            iterations = 0
+            result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
+        }
+
+        let max = Math.max(result.right, result.left, result.up, result.down)
+        if (result['right'] == max) {
+            final.push('right')
+        } if (result['left'] == max) {
+            final.push('left')
+        } if (result['up'] == max) {
+            final.push('up')
+        } if (result['down'] == max) {
+            final.push('down')
+        }
+        console.log('Done simulating moves: ')
+        console.log(result)
+        return final
     }
     
     // Moves probabilities forward a move.
@@ -447,7 +465,6 @@ function mood () {
     if (request.you.health < 90) {
         mode = 'hungry'
     } else if (feel.targetSnake() != null) {
-        console.log(feel.targetSnake())
         mode = 'attack'
     } else {
         mode = 'hungry'
@@ -462,14 +479,9 @@ function brain () {
     mood()
     console.log(mode)
     if (mode == 'hungry') {
-        if (think.simulate(feel.moveTowards(feel.closestFood())[0], requestText) >= iterations) {
-            return feel.moveTowards(feel.closestFood())[0]
-        }
+        return think.simulate(feel.moveTowards(feel.closestFood()), requestText)[0]
     } else if (mode == 'attack') {
-        if (think.simulate(feel.targetSnake()[0], requestText) >= iterations) {
-            console.log(request)
-            return feel.targetSnake()[0]
-        }
+        return think.simulate(feel.targetSnake(), requestText)[0]
     } else {
         return possible[0]
     }
