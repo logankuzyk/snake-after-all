@@ -488,7 +488,7 @@ class Feeling {
 function mood () {
     let feel = new Feeling()
     
-    if (request.you.health < 90) {
+    if (request.you.health < 60) {
         mode = 'hungry'
     } else if (feel.targetSnake() != null) {
         mode = 'attack'
