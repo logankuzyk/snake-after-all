@@ -95,12 +95,10 @@ class Thinking {
         let snake = apiRequest.you
         let head = snake.body[0]
         head = apiRequest.you.body[0]
-        let prob = apiRequest.board.possibilities[head.x][head.y]
         if (iterations > maxIterations) {
             // console.log('ran out of iterations')
             return 0
         }
-        iterations++
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
         for (let other of apiRequest.board.snakes) {
             if (other.body.length == 1) {
@@ -167,6 +165,8 @@ class Thinking {
             return 0
         }
 
+        iterations++
+
         let result = {right: 1, left: 1, up: 1, down: 1}
         let newRequest = JSON.stringify(apiRequest)
         for (let move of this.probabilityFlow(apiRequest)) {
@@ -185,13 +185,21 @@ class Thinking {
     simulate = function (moves, apiRequest) {
         let result = {'left': 0, 'right': 0, 'up': 0, 'down': 0}
         let final = []
+        let possible = this.snakeOptions(request.you.body[0], request)
 
         for (let move of moves) {
+            if (possible.indexOf(move) < 0) {
+                result[move] = 0
+                continue
+            }
             iterations = 0
             result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
         }
 
         let max = Math.max(result.right, result.left, result.up, result.down)
+        if (max == 0) {
+            return possible
+        }
         if (result['right'] == max) {
             final.push('right')
         } if (result['left'] == max) {
@@ -250,7 +258,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        // this.logProbabilities(apiRequest)
+        this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
