@@ -351,10 +351,10 @@ class Feeling {
             }
         }
         
-        if (target[0].length == request.you.body.length) {
+        if (target[0].body.length == request.you.body.length) {
             return null
         }
-        
+
         if (this.snakeDirection(target[0]) == 'right') {
             return this.moveTowards({'x': target[0].body[0].x + 1, 'y': target[0].body[0].y})
         } else if (this.snakeDirection(target[0]) == 'left') {
@@ -447,6 +447,7 @@ function mood () {
     if (request.you.health < 90) {
         mode = 'hungry'
     } else if (feel.targetSnake() != null) {
+        console.log(feel.targetSnake())
         mode = 'attack'
     } else {
         mode = 'hungry'
@@ -465,8 +466,6 @@ function brain () {
             return feel.moveTowards(feel.closestFood())[0]
         }
     } else if (mode == 'attack') {
-        console.log(think.simulate(feel.moveTowards(feel.targetSnake())[0], requestText))
-        console.log(iterations)
         if (think.simulate(feel.targetSnake()[0], requestText) >= iterations) {
             return feel.targetSnake()[0]
         }
