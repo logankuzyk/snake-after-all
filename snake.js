@@ -214,7 +214,7 @@ class Thinking {
         }
         console.log(bigIterations)
         let max = Math.max(result.right, result.left, result.up, result.down)
-        if (max < maxIterations && bigIterations < maxIterations) {
+        if (max < maxIterations && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
             console.log('desired moves are impossible or bad')
             return this.simulate(possible, apiRequest)
         }
@@ -501,6 +501,7 @@ function brain () {
     let feel = new Feeling()
     let think = new Thinking()
     let possible = think.snakeOptions(request.you.body[0], request)
+    bigIterations = 0
 
     mood()
     console.log(mode)
