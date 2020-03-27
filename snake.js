@@ -189,11 +189,10 @@ class Thinking {
             result[move] = this.simulateHelper(newRequest, move)
             // console.log(result[move])
         }
-        // Logic for returning the move that sums to the least amount of probability.
-        // console.log(result)
+
         let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
-        return max + 1
+        return max + this.probabilityFlow(apiRequest).length
     }
 
     // Makes decision between simulated directions.
