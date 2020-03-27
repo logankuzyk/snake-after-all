@@ -3,6 +3,7 @@ let requestText = ''
 let mode = ''
 let maxIterations = 5 // Number of move iterations to be performed.
 let iterations = 0
+let bigIterations = 0
 let storage = []
 let newStorage = []
 
@@ -201,6 +202,8 @@ class Thinking {
         let final = []
         let possible = this.snakeOptions(request.you.body[0], request)
 
+        bigIterations++
+
         if (possible.length == 0) {
             return []
         }
@@ -211,7 +214,7 @@ class Thinking {
         }
 
         let max = Math.max(result.right, result.left, result.up, result.down)
-        if (max < maxIterations) {
+        if (max < maxIterations && bigIterations == 1) {
             console.log('desired moves are impossible or bad')
             return this.simulate(possible, apiRequest)
         }
