@@ -198,7 +198,6 @@ class Thinking {
             if (moves[i].x == lastCoord.x && moves[i].y == lastCoord.y || moves[i].x >= apiRequest.board.width || moves[i].y >= apiRequest.board.height || moves[i].x < 0 || moves[i].y < 0) {
                 let rem = i
                 if (rem >= 0) {
-                    console.log('removed move')
                     moves.splice(rem, 1)
                     i--
                 }
