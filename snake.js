@@ -262,7 +262,7 @@ class Thinking {
 
         for (let move of moves) {
             // console.log(move)
-            if (snake.size == 'bigger') {
+            if (snake.size != 'smaller') {
                 apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
             }
             newStorage.push([move, coord, snake])
@@ -290,7 +290,7 @@ class Thinking {
             storage[i] = newStorage[i]
         }
         newStorage = []
-        // this.logProbabilities(apiRequest)
+        this.logProbabilities(apiRequest)
     }
 
     // Updates occupied tiles of board to have 100% probability.
