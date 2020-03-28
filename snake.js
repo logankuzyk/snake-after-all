@@ -427,6 +427,7 @@ class Feeling {
     // Returns moves avoid nearest bigger snake.
     avoidSnake = function () {
         let target = [request.you, 100]
+        let think = new Thinking()
         for (let snake of request.board.snakes) {
             if (snake.size != 'smaller' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
                 target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
@@ -437,15 +438,37 @@ class Feeling {
             return null
         }
 
-        if (this.snakeDirection(target[0]) == 'right') {
-            return this.moveAway({'x': target[0].body[0].x + 1, 'y': target[0].body[0].y})
-        } else if (this.snakeDirection(target[0]) == 'left') {
-            return this.moveAway({'x': target[0].body[0].x - 1, 'y': target[0].body[0].y})
-        } else if (this.snakeDirection(target[0]) == 'up') {
-            return this.moveAway({'x': target[0].body[0].x, 'y': target[0].body[0].y - 1})
-        } else if (this.snakeDirection(target[0]) ==  'down') {
-            return this.moveAway({'x': target[0].body[0].x, 'y': target[0].body[0].y + 1})
+        let options = think.snakeOptions(target[0].body[0], request)
+        let final = []
+
+        for (let move of options) {
+            if (move == 'right') {
+                for (let otherMove of this.moveAway({'x': target[0].body[0].x + 1, 'y': target[0].body[0].y})) {
+                    if (final.indexOf(otherMove) < 0) {
+                        final.push(otherMove)
+                    }
+                }
+            } else if (move == 'left') {
+                for (let otherMove of this.moveAway({'x': target[0].body[0].x - 1, 'y': target[0].body[0].y})) {
+                    if (final.indexOf(otherMove) < 0) {
+                        final.push(otherMove)
+                    }
+                }
+            } else if (move == 'up') {
+                for (let otherMove of this.moveAway({'x': target[0].body[0].x, 'y': target[0].body[0].y - 1})) {
+                    if (final.indexOf(otherMove) < 0) {
+                        final.push(otherMove)
+                    }
+                }
+            } else if (move ==  'down') {
+                for (let otherMove of this.moveAway({'x': target[0].body[0].x, 'y': target[0].body[0].y + 1})) {
+                    if (final.indexOf(otherMove) < 0) {
+                        final.push(otherMove)
+                    }
+                }
+            }
         }
+        return final
     }
     // Returns directions to make snake go diagonally.
     diagonal = function (snake) {
