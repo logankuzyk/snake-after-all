@@ -428,12 +428,12 @@ class Feeling {
     avoidSnake = function () {
         let target = [request.you, 100]
         for (let snake of request.board.snakes) {
-            if (snake.size == 'bigger' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
+            if (snake.size != 'smaller' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
                 target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
             }
         }
 
-        if (target[0].size != 'bigger') {
+        if (target[0].size == 'smaller') {
             return null
         }
 
