@@ -214,10 +214,10 @@ class Thinking {
         }
         
         // TODO: find a better way of doing this.
-        for (let move of avoid) {
-            iterations = 0
-            result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
-        }
+        // for (let move of avoid) {
+        //     iterations = 0
+        //     result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
+        // }
 
         for (let move of moves) {
             iterations = 0
