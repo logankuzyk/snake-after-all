@@ -6,6 +6,8 @@ let iterations = 0
 let bigIterations = 0
 let storage = []
 let newStorage = []
+let predator = {}
+let snack = {}
 
 // Thinking methods are for life-saving moves and cannot be ignored. snakeOptions prevents immediate death, the others prevent death within the next few turns.
 class Thinking {
@@ -97,12 +99,12 @@ class Thinking {
         let snake = apiRequest.you
         let head = snake.body[0]
         if (iterations > maxIterations) {
-            console.log('ran out of iterations')
+            // console.log('ran out of iterations')
             return 0
         }
 
         if (this.snakeOptions(head, apiRequest).indexOf(move) < 0) {
-            console.log('move not possible')
+            // console.log('move not possible')
             return 0
         }
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
@@ -155,10 +157,10 @@ class Thinking {
         }
         // Check if snake moved off the board.
         if (0 > snake.body[0].x || snake.body[0].x >= apiRequest.board.width) {
-            console.log('moved off horizontal')
+            // console.log('moved off horizontal')
             return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= apiRequest.board.height) {
-            console.log('moved off vertical')
+            // console.log('moved off vertical')
             return 0
         }
         head = snake.body[0]
@@ -171,7 +173,7 @@ class Thinking {
                     continue
                 }
                 if (head.x == member.x && head.y == member.y) {
-                    console.log('moved into snake')
+                    // console.log('moved into snake')
                     return 0
                 }
             }
@@ -182,7 +184,7 @@ class Thinking {
         this.updateProbs(apiRequest)
 
         if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
-            console.log('moved onto high prob tile')
+            // console.log('moved onto high prob tile')
             return 2 - apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y]
         }
 
@@ -199,7 +201,7 @@ class Thinking {
         let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
         // console.log('returning max')
-        console.log(this.probabilityFlow(apiRequest).length)
+        // console.log(this.probabilityFlow(apiRequest).length)
         return max + this.snakeOptions(snake.body[0], apiRequest).length
     }
 
@@ -232,7 +234,7 @@ class Thinking {
             iterations = 0
             result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
-        
+
         let max = Math.max(result.right, result.left, result.up, result.down)
         if (max < maxIterations && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
             console.log('desired moves are impossible or bad:')
@@ -447,6 +449,8 @@ class Feeling {
             return null
         }
 
+        predator = target[0]
+
         let options = think.snakeOptions(target[0].body[0], request)
         let final = []
 
@@ -548,7 +552,9 @@ class Feeling {
         if (minDistance == 100) {
             return request.board.food[0]
         }
-    
+        
+        snack = minFood
+
         return minFood
     }
 }
@@ -561,12 +567,15 @@ function mood () {
         mode = 'hungry'
     } else if (feel.targetSnake() != null) {
         mode = 'attack'
+    } else if (feel.distanceBetween(predator.body[0], request.you.body[0]) < feel.distanceBetween(snack, request.you.body[0])) {
+        mode = 'defend'
     } else {
         mode = 'hungry'
     }
 }
 
 function checkSnakes () {
+    let feel = new Feeling()
     for (let other of request.board.snakes) {
         if (other.body.length > request.you.body.length) {
             other.size = 'bigger'
@@ -576,6 +585,7 @@ function checkSnakes () {
             other.size = 'same'
         }
     }
+    feel.avoidSnake()
 }
 
 function brain () {
@@ -591,6 +601,8 @@ function brain () {
         return think.simulate(feel.moveTowards(feel.closestFood()), requestText)[0]
     } else if (mode == 'attack') {
         return think.simulate(feel.targetSnake(), requestText)[0]
+    } else if (mode == 'defend') {
+        return think.simulate(feel.avoidSnake(), requestText)[0]
     } else {
         return possible[0]
     }
