@@ -212,12 +212,12 @@ class Thinking {
         if (possible.length == 0) {
             return []
         }
-        
+
         // TODO: find a better way of doing this.
-        // for (let move of avoid) {
-        //     iterations = 0
-        //     result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
-        // }
+        for (let move of avoid) {
+            iterations = 0
+            result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
+        }
 
         for (let move of moves) {
             iterations = 0
@@ -262,7 +262,7 @@ class Thinking {
 
         for (let move of moves) {
             // console.log(move)
-            if (snake.body.size == 'bigger') {
+            if (snake.size == 'bigger') {
                 apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
             }
             newStorage.push([move, coord, snake])
@@ -428,12 +428,12 @@ class Feeling {
     avoidSnake = function () {
         let target = [request.you, 100]
         for (let snake of request.board.snakes) {
-            if (snake.body.length < target[0].body.length && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
+            if (snake.size == 'bigger' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
                 target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
             }
         }
 
-        if (target[0].body.size != 'bigger') {
+        if (target[0].size != 'bigger') {
             return null
         }
 
