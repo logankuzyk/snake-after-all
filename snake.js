@@ -177,7 +177,7 @@ class Thinking {
 
         if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
             // console.log('moved onto high prob tile')
-            return apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1
+            return 2 - apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y]
         }
 
         iterations++
