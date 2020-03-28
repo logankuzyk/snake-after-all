@@ -403,6 +403,7 @@ class Feeling {
     // Returns moves attacking the closest smaller snake.
     targetSnake = function () {
         let target = [request.you, 100]
+        let think = new Thinking()
         for (let snake of request.board.snakes) {
             if (snake.size == 'smaller' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
                 target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
