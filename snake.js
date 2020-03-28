@@ -93,10 +93,16 @@ class Thinking {
         if (typeof(apiRequest) == 'string') {
             apiRequest = JSON.parse(apiRequest)
         }
+        
         let snake = apiRequest.you
         let head = snake.body[0]
         if (iterations > maxIterations) {
-            // console.log('ran out of iterations')
+            console.log('ran out of iterations')
+            return 0
+        }
+
+        if (this.snakeOptions(head, apiRequest).indexOf(move) < 0) {
+            console.log('move not possible')
             return 0
         }
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
@@ -149,10 +155,10 @@ class Thinking {
         }
         // Check if snake moved off the board.
         if (0 > snake.body[0].x || snake.body[0].x >= apiRequest.board.width) {
-            // console.log('moved off horizontal')
+            console.log('moved off horizontal')
             return 0
         } else if (0 > snake.body[0].y || snake.body[0].y >= apiRequest.board.height) {
-            // console.log('moved off vertical')
+            console.log('moved off vertical')
             return 0
         }
         head = snake.body[0]
@@ -165,7 +171,7 @@ class Thinking {
                     continue
                 }
                 if (head.x == member.x && head.y == member.y) {
-                    // console.log('moved into snake')
+                    console.log('moved into snake')
                     return 0
                 }
             }
@@ -176,7 +182,7 @@ class Thinking {
         this.updateProbs(apiRequest)
 
         if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
-            // console.log('moved onto high prob tile')
+            console.log('moved onto high prob tile')
             return 2 - apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y]
         }
 
@@ -192,7 +198,9 @@ class Thinking {
 
         let max = Math.max(result.right, result.left, result.up, result.down)
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
-        return max + this.probabilityFlow(apiRequest).length
+        // console.log('returning max')
+        console.log(this.probabilityFlow(apiRequest).length)
+        return max + this.snakeOptions(snake.body[0], apiRequest).length
     }
 
     // Makes decision between simulated directions.
@@ -218,12 +226,13 @@ class Thinking {
             iterations = 0
             result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
-
+        console.log('avoid')
+        console.log(result)
         for (let move of moves) {
             iterations = 0
             result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
-
+        
         let max = Math.max(result.right, result.left, result.up, result.down)
         if (max < maxIterations && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
             console.log('desired moves are impossible or bad:')
