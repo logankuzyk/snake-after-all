@@ -200,16 +200,28 @@ class Thinking {
         let result = {'left': 0, 'right': 0, 'up': 0, 'down': 0}
         let final = []
         let possible = this.snakeOptions(request.you.body[0], request)
-
+        let feel = new Feeling()
+        let avoid = []
+        
         bigIterations++
+
+        if (feel.avoidSnake() != null) {
+            avoid = feel.avoidSnake()
+        }
 
         if (possible.length == 0) {
             return []
         }
+        
+        // TODO: find a better way of doing this.
+        for (let move of avoid) {
+            iterations = 0
+            result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
+        }
 
         for (let move of moves) {
             iterations = 0
-            result[move] = this.simulateHelper(JSON.parse(apiRequest), move)
+            result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
 
         let max = Math.max(result.right, result.left, result.up, result.down)
@@ -236,7 +248,7 @@ class Thinking {
     // TODO: make it so that it only adds probability score to outer layer of blocks.
     // simulateHelper is the only other recursive function now, step should be checked compared to simulateHelper's iterations. Therefore iterations should be made global.
     // Doesn't update probability of coordinate itself but the 'free' ones around it.
-    updateProbsHelper = function (coord, lastCoord, apiRequest, size) {
+    updateProbsHelper = function (coord, lastCoord, snake, apiRequest) {
         let moves = [{x: coord.x + 1, y: coord.y}, {x: coord.x - 1, y: coord.y}, {x: coord.x, y: coord.y + 1}, {x: coord.x, y: coord.y - 1}]
         for (let i = 0; i < moves.length; i++) {
             if (moves[i].x == lastCoord.x && moves[i].y == lastCoord.y || moves[i].x >= apiRequest.board.width || moves[i].y >= apiRequest.board.height || moves[i].x < 0 || moves[i].y < 0) {
@@ -250,34 +262,26 @@ class Thinking {
 
         for (let move of moves) {
             // console.log(move)
-            if (size == 'bigger') {
+            if (snake.body.size == 'bigger') {
                 apiRequest.board.possibilities[move.x][move.y] += apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
-            } else if (size == 'smaller') {
-                // apiRequest.board.possibilities[move.x][move.y] -= apiRequest.board.possibilities[coord.x][coord.y] * 1/moves.length
             }
-            newStorage.push([move, coord, mode])
+            newStorage.push([move, coord, snake])
         }
     }
 
     updateProbs = function (apiRequest) {
         this.currentProbs(apiRequest)
-        let lengths = {}
         if (iterations <= 1) {
-            for (let other of request.board.snakes) {
-                lengths[other.id] = other.body.length
-            }
             for (let other of apiRequest.board.snakes) {
                 if (other.body.length < 2 || other.body[0].x == apiRequest.you.body[0].x && other.body[0].y == apiRequest.you.body[0].y) {
                     continue
-                } else if (lengths[other.id] < request.you.body.length) {
-                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest, 'smaller')
                 } else {
-                    this.updateProbsHelper(other.body[0], other.body[1], apiRequest, 'bigger')
+                    this.updateProbsHelper(other.body[0], other.body[1], other, apiRequest)
                 }
             }
         } else {
             for (let member of storage) {
-                this.updateProbsHelper(member[0], member[1], apiRequest, member[2])
+                this.updateProbsHelper(member[0], member[1], member[2], apiRequest)
             }
         }
         // Dumps newStorage into storage and resets newStorage.
@@ -386,7 +390,7 @@ class Feeling {
         let opp = this.moveTowards({x, y})
         let want = ['right', 'left', 'up', 'down']
 
-        for (move of opp) {
+        for (let move of opp) {
             let rem = want.indexOf(move)
             if (rem >= 0) {
                 want.splice(rem, 1)
@@ -420,6 +424,29 @@ class Feeling {
         }
     }
 
+    // Returns moves avoid nearest bigger snake.
+    avoidSnake = function () {
+        let target = [request.you, 100]
+        for (let snake of request.board.snakes) {
+            if (snake.body.length < target[0].body.length && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
+                target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
+            }
+        }
+
+        if (target[0].body.size != 'bigger') {
+            return null
+        }
+
+        if (this.snakeDirection(target[0]) == 'right') {
+            return this.moveAway({'x': target[0].body[0].x + 1, 'y': target[0].body[0].y})
+        } else if (this.snakeDirection(target[0]) == 'left') {
+            return this.moveAway({'x': target[0].body[0].x - 1, 'y': target[0].body[0].y})
+        } else if (this.snakeDirection(target[0]) == 'up') {
+            return this.moveAway({'x': target[0].body[0].x, 'y': target[0].body[0].y - 1})
+        } else if (this.snakeDirection(target[0]) ==  'down') {
+            return this.moveAway({'x': target[0].body[0].x, 'y': target[0].body[0].y + 1})
+        }
+    }
     // Returns directions to make snake go diagonally.
     diagonal = function (snake) {
         let dir = this.snakeDirection(snake)[0]
@@ -507,6 +534,18 @@ function mood () {
     }
 }
 
+function checkSnakes () {
+    for (let other of request.board.snakes) {
+        if (other.body.length > request.you.body.length) {
+            other.size = 'bigger'
+        } else if (other.body.length < request.you.body.length) {
+            other.size = 'smaller'
+        } else {
+            other.size = 'same'
+        }
+    }
+}
+
 function brain () {
     let feel = new Feeling()
     let think = new Thinking()
@@ -515,6 +554,7 @@ function brain () {
 
     mood()
     console.log(mode)
+
     if (mode == 'hungry') {
         return think.simulate(feel.moveTowards(feel.closestFood()), requestText)[0]
     } else if (mode == 'attack') {
@@ -535,6 +575,7 @@ module.exports = function (apiRequest) {
             request.board.possibilities[i][j] = 0
         }
     }
+    checkSnakes()
     requestText = JSON.stringify(request)
     let message = brain()
     // console.log(request.you.body[0])
