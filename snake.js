@@ -586,7 +586,7 @@ function mood () {
     console.log('distance to food ' + feel.distanceBetween(snack, request.you.body[0]))
     if (request.you.health < 60) {
         mode = 'hungry'
-    } else if (feel.targetSnake() != null && feel.avoidSnake() == null) {
+    } else if (feel.targetSnake() != null && request.board.snakes.length < 4) {
         mode = 'attack'
     } else if (feel.distanceBetween(predator.body[0], request.you.body[0]) < feel.distanceBetween(snack, request.you.body[0]) && request.board.snakes.length < 3) {
         mode = 'defend'
