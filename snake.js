@@ -623,7 +623,7 @@ function brain () {
     } else if (mode == 'attack') {
         return think.simulate(feel.targetSnake(), requestText)[0]
     } else if (mode == 'defend') {
-        return think.simulate(feel.movedTowards(predator.body[predator.body.length - 1]), requestText)[0]
+        return think.simulate(feel.moveTowards(predator.body[predator.body.length - 1]), requestText)[0]
     } else {
         return possible[0]
     }
