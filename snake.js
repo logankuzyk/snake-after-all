@@ -567,7 +567,8 @@ class Feeling {
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
     let feel = new Feeling()
-    
+    console.log('distance to predator: ' + feel.distanceBetween(predator.body[0], request.you.body[0]))
+    console.log('distance to food ' + feel.distanceBetween(snack, request.you.body[0]))
     if (request.you.health < 60) {
         mode = 'hungry'
     } else if (feel.targetSnake() != null) {
