@@ -36,8 +36,10 @@ class Thinking {
         let y = coord.y
 
         for (let other of apiRequest.board.snakes) {
-            other.body.pop()
             for (let i = 0; i < other.body.length; i++) {
+                if (i == other.body.length - 1) {
+                    continue
+                }
                 if (other.body[i].x == x + 1 && other.body[i].y == y) {
                     let rem = possibilities.indexOf('right')
                     if (rem >= 0) {
