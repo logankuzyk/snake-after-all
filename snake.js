@@ -106,6 +106,11 @@ class Thinking {
             return 0
         }
 
+        if (this.snakeOptions(head, apiRequest).length == 0) {
+            // console.log('ran out of options')
+            return 0
+        }
+
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
         for (let other of apiRequest.board.snakes) {
             if (other.body.length == 1) {
@@ -201,6 +206,7 @@ class Thinking {
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
         // console.log('returning max')
         // console.log(this.probabilityFlow(apiRequest).length)
+        // console.log(max)
         return max + this.snakeOptions(snake.body[0], apiRequest).length + 1
     }
 
@@ -241,7 +247,7 @@ class Thinking {
         }
 
         let best = Math.max(result.right, result.left, result.up, result.down)
-        if (best == 0 && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
+        if (best < 5 && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
             console.log('desired moves are impossible or bad:')
             console.log(result)
             return this.simulate(possible, apiRequest)
@@ -574,7 +580,9 @@ class Feeling {
 function mood () {
     let feel = new Feeling()
     feel.closestFood()
-    console.log('distance to predator: ' + feel.distanceBetween(predator.body[0], request.you.body[0]))
+    if (predator.x != undefined) {
+        console.log('distance to predator: ' + feel.distanceBetween(predator.body[0], request.you.body[0]))
+    }
     console.log('distance to food ' + feel.distanceBetween(snack, request.you.body[0]))
     if (request.you.health < 60) {
         mode = 'hungry'
