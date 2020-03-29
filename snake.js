@@ -238,19 +238,21 @@ class Thinking {
             result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
 
-        let max = Math.max(result.right, result.left, result.up, result.down)
-        if (max < maxIterations && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
+        let best = Math.max(result.right, result.left, result.up, result.down)
+        if (best == 0 && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
             console.log('desired moves are impossible or bad:')
             console.log(result)
             return this.simulate(possible, apiRequest)
+        } else if (best < 2) {
+            best = Math.min(result.right, result.left, result.up, result.down)
         }
-        if (result['right'] == max) {
+        if (result['right'] == best) {
             final.push('right')
-        } if (result['left'] == max) {
+        } if (result['left'] == best) {
             final.push('left')
-        } if (result['up'] == max) {
+        } if (result['up'] == best) {
             final.push('up')
-        } if (result['down'] == max) {
+        } if (result['down'] == best) {
             final.push('down')
         }
         console.log('Done simulating moves: ')
