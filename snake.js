@@ -205,7 +205,7 @@ class Thinking {
         // return simRequest.board.possibilities[snake.body[0].x][snake.body[0].y] - 1 + min
         // console.log('returning max')
         // console.log(this.probabilityFlow(apiRequest).length)
-        return max + this.snakeOptions(snake.body[0], apiRequest).length
+        return max + this.snakeOptions(snake.body[0], apiRequest).length + 1
     }
 
     // Makes decision between simulated directions.
@@ -244,6 +244,11 @@ class Thinking {
             console.log(result)
             return this.simulate(possible, apiRequest)
         } else if (best < 2) {
+            for (let move of Object.keys(result)) {
+                if (result[move] == 0) {
+                    result[move] == 5
+                }
+            }
             best = Math.min(result.right, result.left, result.up, result.down)
         }
         if (result['right'] == best) {
