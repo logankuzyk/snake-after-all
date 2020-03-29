@@ -451,12 +451,12 @@ class Feeling {
         let target = [request.you, 100]
         let think = new Thinking()
         for (let snake of request.board.snakes) {
-            if (snake.size != 'smaller' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1]) {
+            if (snake.size != 'smaller' && this.distanceBetween(request.you.body[0], snake.body[0]) < target[1] && snake.id != request.you.id) {
                 target = [snake, this.distanceBetween(request.you.body[0], snake.body[0])]
             }
         }
 
-        if (target[0].size == 'smaller') {
+        if (target[0].id == request.you.id) {
             return null
         }
 
@@ -573,6 +573,7 @@ class Feeling {
 // Will return the best behavior mode for the situation. For example, attack, defense, grow, etc.
 function mood () {
     let feel = new Feeling()
+    feel.closestFood()
     console.log('distance to predator: ' + feel.distanceBetween(predator.body[0], request.you.body[0]))
     console.log('distance to food ' + feel.distanceBetween(snack, request.you.body[0]))
     if (request.you.health < 60) {
