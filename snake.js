@@ -247,7 +247,7 @@ class Thinking {
         }
 
         let best = Math.max(result.right, result.left, result.up, result.down)
-        if (best < 5 && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
+        if (best < 10 && bigIterations < maxIterations) { // TODO: make this run less times in an "infinite" loop scenario
             console.log('desired moves are impossible or bad:')
             console.log(result)
             return this.simulate(possible, apiRequest)
