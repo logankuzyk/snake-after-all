@@ -567,7 +567,7 @@ function mood () {
         mode = 'hungry'
     } else if (feel.targetSnake() != null) {
         mode = 'attack'
-    } else if (feel.distanceBetween(predator.body[0], request.you.body[0]) < feel.distanceBetween(snack, request.you.body[0])) {
+    } else if (feel.distanceBetween(predator.body[0], request.you.body[0]) < feel.distanceBetween(snack, request.you.body[0]) && request.board.snakes.length < 3) {
         mode = 'defend'
     } else {
         mode = 'hungry'
