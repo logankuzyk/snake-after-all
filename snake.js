@@ -37,7 +37,7 @@ class Thinking {
 
         for (let other of apiRequest.board.snakes) {
             for (let i = 0; i < other.body.length; i++) {
-                if (i == other.body.length - 1) {
+                if (i == other.body.length - 1 && other.body.length > 2) {
                     continue
                 }
                 if (other.body[i].x == x + 1 && other.body[i].y == y) {
@@ -106,10 +106,6 @@ class Thinking {
             return 0
         }
 
-        if (this.snakeOptions(head, apiRequest).indexOf(move) < 0) {
-            // console.log('move not possible')
-            return 0
-        }
         // Current problems: probability not changing when snake moves. Snake moves backwards into itself when at size 2.
         for (let other of apiRequest.board.snakes) {
             if (other.body.length == 1) {
@@ -225,16 +221,22 @@ class Thinking {
         if (possible.length == 0) {
             return []
         }
-
         // TODO: find a better way of doing this.
         for (let move of avoid) {
             iterations = 0
+            if (this.snakeOptions(request.you.body[0], request).indexOf(move) < 0) {
+                result[move] = 0
+                continue
+            }
             result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
-        console.log('avoid')
         console.log(result)
         for (let move of moves) {
             iterations = 0
+            if (this.snakeOptions(request.you.body[0], request).indexOf(move) < 0) {
+                result[move] = 0
+                continue
+            }
             result[move] += this.simulateHelper(JSON.parse(apiRequest), move)
         }
 
@@ -246,7 +248,7 @@ class Thinking {
         } else if (best < 2) {
             for (let move of Object.keys(result)) {
                 if (result[move] == 0) {
-                    result[move] == 5
+                    result[move] = 5
                 }
             }
             best = Math.min(result.right, result.left, result.up, result.down)
@@ -280,7 +282,6 @@ class Thinking {
                 }
             }
         }
-
         for (let move of moves) {
             // console.log(move)
             if (snake.size != 'smaller') {
