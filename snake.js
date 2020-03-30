@@ -187,6 +187,11 @@ class Thinking {
         // console.log(apiRequest.board.snakes[1])
         this.updateProbs(apiRequest)
 
+        if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
+            // console.log('moved onto high prob tile')
+            return 2 - apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y]
+        }
+
         iterations++
 
         let result = {right: 0, left: 0, up: 0, down: 0}
@@ -202,24 +207,22 @@ class Thinking {
         // console.log('returning max')
         // console.log(this.probabilityFlow(apiRequest).length)
         // console.log(max)
-        
-        if (apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y] > 1) {
-            return (2 - apiRequest.board.possibilities[snake.body[0].x][snake.body[0].y]) * (max + this.snakeOptions(snake.body[0], apiRequest).length)
-        } else {
-            return max + this.snakeOptions(snake.body[0], apiRequest).length
-        }
+        return max + this.snakeOptions(snake.body[0], apiRequest).length + 1
     }
 
-    // Possible moves => don't get trapped => avoid => desired direction(s)
     // Makes decision between simulated directions.
     simulate = function (moves, apiRequest) {
         let result = {'left': 0, 'right': 0, 'up': 0, 'down': 0}
         let final = []
-        let feel = new Feeling()
         let possible = this.snakeOptions(request.you.body[0], request)
-        let avoid = feel.avoidSnake()
+        let feel = new Feeling()
+        let avoid = []
         
         bigIterations++
+
+        if (feel.avoidSnake() != null) {
+            avoid = feel.avoidSnake()
+        }
 
         if (possible.length == 0) {
             return []
@@ -248,6 +251,13 @@ class Thinking {
             console.log('desired moves are impossible or bad:')
             console.log(result)
             return this.simulate(possible, apiRequest)
+        } else if (best < 2) {
+            for (let move of Object.keys(result)) {
+                if (result[move] == 0) {
+                    result[move] = 5
+                }
+            }
+            best = Math.min(result.right, result.left, result.up, result.down)
         }
         if (result['right'] == best) {
             final.push('right')
